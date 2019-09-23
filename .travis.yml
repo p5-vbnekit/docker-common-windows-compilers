@@ -1,0 +1,60 @@
+os: windows
+language: cpp
+services: docker
+
+stages:
+- name: chocolatey
+- name: msys2
+
+before_install:
+- choco install python3 --confirm --params "/InstallDir:c:\\python3"
+- git config --local user.name "p5-vbnekit"
+- git config --local user.email "vbnekit@p5y.su"
+- export TRAVIS_TAG=${TRAVIS_TAG:-$(date +'%Y%m%d%H%M%S')-$(git log --format=%h -1)}
+- git tag "${TRAVIS_TAG}"
+- mkdir "/tmp/build"
+
+jobs:
+  include:
+  - name: chocolatey
+    script: false
+    - |
+      /c/python3/python.exe bin/execute.py sh -e << EOF
+        export PS4=".travis.yml chocolatey job: executing command: "; set -x
+        docker build --tag chocolatey --file chocolatey.Dockerfile .
+        docker save --output /tmp/build/chocolatey.tar chocolatey
+        docker rmi chocolatey
+        docker system prune --force
+        bin/xz.exe -k9 /tmp/build/chocolatey.tar
+      EOF
+    deploy:
+      provider: releases
+      api_key:
+        secure: usn89BK6M+WmF1OjqCr+o+M7lTFhrPa8FLCfDoddwdT9ecbhQ7tEI4/CePyFIu5FUNdgFY++YeHv9MhzPdFo5UkfRP/RMWGtO6AKN5I+VOPZSf16xcXRhXiEgpA8Lr5l9Yf+KfSohVJNZj+iUGWqtS3hbKb/h57OP5jawMUYiS44/2++Xj6vY+Teq26+5njOY94nW7xfhreH1Xj0cObmPMlJPml8nj3A6M4HaJdUWuuv2c+osOzzX8dSOvaFDNdH7Am6QAo1GI4bQvyJmfpNf6peGPjv048bfPP/iU4otxSSIucpUHmp1TjXi6wtMeIxt7FFwFHe86lOVFzGQWat0DpZM7dad+vDTJVVhJH8vDN4hbY6FKQIOyEOUtiej4t/CCd4PaNrOGsDFl8jYY/I43Z/0aQqImQlfEtsgdc8Kozc+pku8xNGK23FNoMif9Mb1XnANz3tG+TpAuHOmoK5wuyjqDF8WBzL7ISt+QDeVRtgnlgEnvCpklaLsddgv41Gi76oJ5xU3cm3hKlEWiD6PtMWLFJnXMFISp6rrst0SdsoK/kGZbHX5PXxSg27yfIeWYAsSssZAJM7tXuhmGI5WOnY1mQKwH61lisYLY1uncOTrBiqX59FzpyYRvnh9KZuChAa163JRzKlYh5bmbxNPpoMm+Gliv461W7NaPQQwzM=
+      file:
+      - "/tmp/build/chocolatey.tar"
+      - "/tmp/build/chocolatey.tar.xz"
+      on:
+        branch: master
+  - name: msys2
+    script:
+    - |
+      /c/python3/python.exe bin/execute.py sh -e << EOF
+        export PS4=".travis.yml msys2 job: executing command: "; set -x
+        docker build --tag chocolatey --file chocolatey.Dockerfile .
+        docker system prune --force
+        docker build --tag msys2 --file msys2.Dockerfile .
+        docker save --output /tmp/build/msys2.tar msys2
+        docker rmi msys2 chocolatey
+        docker system prune --force
+        bin/xz.exe -k9 /tmp/build/msys2.tar
+      EOF
+    deploy:
+      provider: releases
+      api_key:
+        secure: usn89BK6M+WmF1OjqCr+o+M7lTFhrPa8FLCfDoddwdT9ecbhQ7tEI4/CePyFIu5FUNdgFY++YeHv9MhzPdFo5UkfRP/RMWGtO6AKN5I+VOPZSf16xcXRhXiEgpA8Lr5l9Yf+KfSohVJNZj+iUGWqtS3hbKb/h57OP5jawMUYiS44/2++Xj6vY+Teq26+5njOY94nW7xfhreH1Xj0cObmPMlJPml8nj3A6M4HaJdUWuuv2c+osOzzX8dSOvaFDNdH7Am6QAo1GI4bQvyJmfpNf6peGPjv048bfPP/iU4otxSSIucpUHmp1TjXi6wtMeIxt7FFwFHe86lOVFzGQWat0DpZM7dad+vDTJVVhJH8vDN4hbY6FKQIOyEOUtiej4t/CCd4PaNrOGsDFl8jYY/I43Z/0aQqImQlfEtsgdc8Kozc+pku8xNGK23FNoMif9Mb1XnANz3tG+TpAuHOmoK5wuyjqDF8WBzL7ISt+QDeVRtgnlgEnvCpklaLsddgv41Gi76oJ5xU3cm3hKlEWiD6PtMWLFJnXMFISp6rrst0SdsoK/kGZbHX5PXxSg27yfIeWYAsSssZAJM7tXuhmGI5WOnY1mQKwH61lisYLY1uncOTrBiqX59FzpyYRvnh9KZuChAa163JRzKlYh5bmbxNPpoMm+Gliv461W7NaPQQwzM=
+      file:
+      - "/tmp/build/msys2.tar"
+      - "/tmp/build/msys2.tar.xz"
+      on:
+        branch: master
