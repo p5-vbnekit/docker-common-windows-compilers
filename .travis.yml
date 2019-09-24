@@ -9,7 +9,7 @@ stages:
 
 before_install:
 - m_python_directory_normal_path="/tmp/build/python3"
-- m_python_directory_ugly_path=`cd "${m_python_directory_normal_path}" && cmd.exe /c "echo %cd%"`
+- m_python_directory_ugly_path=`cd "${m_python_directory_normal_path}" && cmd.exe /c \"echo %cd%\"`
 - mkdir -p "/tmp/build/output" "${m_python_directory_normal_path}"
 - export m_python_path="${m_python_directory_normal_path}/python.exe"
 - choco install python3 --confirm --params "/InstallDir:\"${m_python_directory_ugly_path}\""
