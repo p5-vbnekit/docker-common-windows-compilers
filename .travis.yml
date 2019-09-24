@@ -3,8 +3,9 @@ language: cpp
 services: docker
 
 stages:
-- name: first
-- name: second
+- name: tar-1
+- name: tar-2
+- name: xz
 
 before_install:
 - m_python_directory_normal_path="/tmp/build/python3"
@@ -21,7 +22,7 @@ before_install:
 jobs:
   include:
   - name: chocolatey
-    stage: first
+    stage: tar-1
     script:
     - |
       "${m_python_path}" bin/execute.py sh -e << EOF
@@ -48,7 +49,7 @@ jobs:
       on:
         branch: master
   - name: msys2
-    stage: second
+    stage: tar-2
     script:
     - |
       "${m_python_path}" bin/execute.py sh -e << EOF
