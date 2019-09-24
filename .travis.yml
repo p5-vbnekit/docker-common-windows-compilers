@@ -17,7 +17,7 @@ before_install:
 jobs:
   include:
   - name: chocolatey
-    script: false
+    script:
     - |
       /c/python3/python.exe bin/execute.py sh -e << EOF
         export PS4=".travis.yml chocolatey job: executing command: "; set -x
