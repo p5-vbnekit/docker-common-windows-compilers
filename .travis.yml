@@ -10,19 +10,25 @@ stages:
 before_install:
 - m_python_directory_normal_path="/tmp/build/python3"
 - mkdir -p "${m_python_directory_normal_path}"
+- mkdir -p "/tmp/build/output"
 - m_python_directory_ugly_path=`cd "${m_python_directory_normal_path}" && cmd.exe /c "echo %cd%"`
 - export m_python_path="${m_python_directory_normal_path}/python.exe"
 - choco install python3 --confirm --params "/InstallDir:\"${m_python_directory_ugly_path}\""
 - git config --local user.name "p5-vbnekit"
 - git config --local user.email "vbnekit@p5y.su"
 - export TRAVIS_TAG=${TRAVIS_TAG:-$(date +'%Y%m%d%H%M%S')-$(git log --format=%h -1)}
-- git tag "${TRAVIS_TAG}"
-- mkdir -p "/tmp/build"
+
+before_deploy: git tag "${TRAVIS_TAG}"
 
 deploy:
   provider: releases
     api_key:
       secure: usn89BK6M+WmF1OjqCr+o+M7lTFhrPa8FLCfDoddwdT9ecbhQ7tEI4/CePyFIu5FUNdgFY++YeHv9MhzPdFo5UkfRP/RMWGtO6AKN5I+VOPZSf16xcXRhXiEgpA8Lr5l9Yf+KfSohVJNZj+iUGWqtS3hbKb/h57OP5jawMUYiS44/2++Xj6vY+Teq26+5njOY94nW7xfhreH1Xj0cObmPMlJPml8nj3A6M4HaJdUWuuv2c+osOzzX8dSOvaFDNdH7Am6QAo1GI4bQvyJmfpNf6peGPjv048bfPP/iU4otxSSIucpUHmp1TjXi6wtMeIxt7FFwFHe86lOVFzGQWat0DpZM7dad+vDTJVVhJH8vDN4hbY6FKQIOyEOUtiej4t/CCd4PaNrOGsDFl8jYY/I43Z/0aQqImQlfEtsgdc8Kozc+pku8xNGK23FNoMif9Mb1XnANz3tG+TpAuHOmoK5wuyjqDF8WBzL7ISt+QDeVRtgnlgEnvCpklaLsddgv41Gi76oJ5xU3cm3hKlEWiD6PtMWLFJnXMFISp6rrst0SdsoK/kGZbHX5PXxSg27yfIeWYAsSssZAJM7tXuhmGI5WOnY1mQKwH61lisYLY1uncOTrBiqX59FzpyYRvnh9KZuChAa163JRzKlYh5bmbxNPpoMm+Gliv461W7NaPQQwzM=
+  on:
+    branch: master
+  file: -
+    "/tmp/build/output/*.tar"
+    "/tmp/build/output/*.tar.xz"
 
 jobs:
   include:
@@ -32,31 +38,23 @@ jobs:
     - |
       "${m_python_path}" bin/execute.py sh -e << EOF
         export PS4=".travis.yml chocolatey job: executing command: "; set -x
-        echo chocolatey > /tmp/build/chocolatey.tar
-        bin/xz.exe -k9 /tmp/build/chocolatey.tar
+        echo chocolatey > /tmp/build/output/chocolatey.tar
       EOF
     #- |
       #"${m_python_path}" bin/execute.py sh -e << EOF
         #export PS4=".travis.yml chocolatey job: executing command: "; set -x
         #docker build --tag chocolatey --file chocolatey.Dockerfile .
-        #docker save --output /tmp/build/chocolatey.tar chocolatey
+        #docker save --output /tmp/build/output/chocolatey.tar chocolatey
         #docker rmi chocolatey
         #docker system prune --force
-        #bin/xz.exe -k9 /tmp/build/chocolatey.tar
       #EOF
-    deploy:
-      provider: releases
-      file: "/tmp/build/chocolatey.tar"
-      on:
-        branch: master
   - name: msys2
     stage: tar-2
     script:
     - |
       "${m_python_path}" bin/execute.py sh -e << EOF
         export PS4=".travis.yml chocolatey job: executing command: "; set -x
-        echo msys2 > /tmp/build/msys2.tar
-        bin/xz.exe -k9 /tmp/build/msys2.tar
+        echo msys2 > /tmp/build/output/msys2.tar
       EOF
     #- |
       #"${m_python_path}" bin/execute.py sh -e << EOF
@@ -64,13 +62,23 @@ jobs:
         #docker build --tag chocolatey --file chocolatey.Dockerfile .
         #docker system prune --force
         #docker build --tag msys2 --file msys2.Dockerfile .
-        #docker save --output /tmp/build/msys2.tar msys2
+        #docker save --output /tmp/build/output/msys2.tar msys2
         #docker rmi msys2 chocolatey
         #docker system prune --force
-        #bin/xz.exe -k9 /tmp/build/msys2.tar
       #EOF
-    deploy:
-      provider: releases
-      file: "/tmp/build/msys2.tar"
-      on:
-        branch: master
+  - name: chocolatey
+    stage: xz
+    script:
+    - |
+      "${m_python_path}" bin/execute.py sh -e << EOF
+        export PS4=".travis.yml chocolatey job: executing command: "; set -x
+        bin/xz.exe -k9 /tmp/build/output/chocolatey.tar
+      EOF
+  - name: msys2
+    stage: xz
+    script:
+    - |
+      "${m_python_path}" bin/execute.py sh -e << EOF
+        export PS4=".travis.yml chocolatey job: executing command: "; set -x
+        bin/xz.exe -k9 /tmp/build/output/msys2.tar
+      EOF
