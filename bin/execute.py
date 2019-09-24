@@ -11,7 +11,7 @@ if "__main__" == __name__:
     m_begin = time.monotonic()
     with m_event:
       while m_condition:
-        if m_event.wait(+2.0e+0): continue
+        if m_event.wait(+6.0e+1): continue
         if not m_condition: break
         print("execute.py: time elapsed: {}".format(time.monotonic() - m_begin), file = sys.stderr)
     with m_event: print("execute.py: exiting", file = sys.stderr)
