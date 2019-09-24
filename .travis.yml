@@ -20,6 +20,7 @@ before_deploy:
 - git config --local user.name "p5-vbnekit"
 - git config --local user.email "vbnekit@p5y.su"
 - git tag "${TRAVIS_TAG}"
+- ls "/tmp/build/output/"
 
 deploy:
   provider: releases
