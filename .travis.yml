@@ -3,11 +3,14 @@ language: cpp
 services: docker
 
 stages:
-- name: chocolatey
-- name: msys2
+- name: first
+- name: second
 
 before_install:
-- choco install python3 --confirm --params "/InstallDir:c:\\python3"
+- m_python_directory_path="/tmp/build/python3"
+- m_python_directory_ugly_path=`cmd.exe /c "echo %cd%"`
+- export m_python_path="${m_python_directory_path}/python.exe"
+- choco install python3 --confirm --params "/InstallDir:\"${m_python_directory_ugly_path}\""
 - git config --local user.name "p5-vbnekit"
 - git config --local user.email "vbnekit@p5y.su"
 - export TRAVIS_TAG=${TRAVIS_TAG:-$(date +'%Y%m%d%H%M%S')-$(git log --format=%h -1)}
@@ -17,9 +20,10 @@ before_install:
 jobs:
   include:
   - name: chocolatey
+    stage: first
     script:
     - |
-      /c/python3/python.exe bin/execute.py sh -e << EOF
+      "${m_python_path}" bin/execute.py sh -e << EOF
         export PS4=".travis.yml chocolatey job: executing command: "; set -x
         docker build --tag chocolatey --file chocolatey.Dockerfile .
         docker save --output /tmp/build/chocolatey.tar chocolatey
@@ -37,9 +41,10 @@ jobs:
       on:
         branch: master
   - name: msys2
+    stage: second
     script:
     - |
-      /c/python3/python.exe bin/execute.py sh -e << EOF
+      "${m_python_path}" bin/execute.py sh -e << EOF
         export PS4=".travis.yml msys2 job: executing command: "; set -x
         docker build --tag chocolatey --file chocolatey.Dockerfile .
         docker system prune --force
