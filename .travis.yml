@@ -30,8 +30,8 @@ deploy:
   on:
     branch: master
   file:
-    - "/tmp/build/output/*.tar"
-    - "/tmp/build/output/*.tar.xz"
+    - /tmp/build/output/*.tar
+    - /tmp/build/output/*.tar.xz
 
 jobs:
   include:
