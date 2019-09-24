@@ -9,12 +9,12 @@ stages:
 
 before_install:
 - m_python_directory_normal_path="/tmp/build/python3"
-- m_python_directory_ugly_path=`sh -e bin/prepare-python-directory-path.sh "${m_python_directory_normal_path}"`
+- mkdir -p "/tmp/build/output" "${m_python_directory_normal_path}"
+- m_python_directory_ugly_path=`cd "${m_python_directory_normal_path}" && cmd.exe /c 'echo %cd%' | tail -n 1`
 - echo "${m_python_directory_ugly_path}"
 - export m_python_path="${m_python_directory_normal_path}/python.exe"
 - choco install python3 --confirm --params "/InstallDir:\"${m_python_directory_ugly_path}\""
 - export TRAVIS_TAG=${TRAVIS_TAG:-$(date +'%Y%m%d%H%M%S')-$(git log --format=%h -1)}
-- mkdir -p "/tmp/build/output"
 
 before_deploy:
 - git config --local user.name "p5-vbnekit"
