@@ -1,4 +1,4 @@
-!/bin/sh -e
+#!/bin/sh -e
 
 m_path="$1"
 test -n "${m_path}"
