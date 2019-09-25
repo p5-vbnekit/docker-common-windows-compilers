@@ -48,12 +48,11 @@ jobs:
     script: |
       "${m_python3_path}" "${m_tools_directory_path}/travis_wait_alternative.py" sh -e << EOF
       export PS4="executing command: "; set -x
-      # docker build --tag chocolatey --file chocolatey.Dockerfile .
-      # docker system prune --force
-      # docker save chocolatey | split --numeric-suffixes --bytes=2GB - /tmp/build/assets/chocolatey.tar.
-      # docker rmi chocolatey
-      # docker system prune --force
-      echo CHOCOLATEY > /tmp/build/output/test.txt && tar -c /tmp/build/output/test.txt | split --numeric-suffixes --bytes=2GB - /tmp/build/assets/chocolatey.tar.
+      docker build --tag chocolatey --file chocolatey.Dockerfile .
+      docker system prune --force
+      docker save chocolatey | split --numeric-suffixes --bytes=2GB - /tmp/build/assets/chocolatey.tar.
+      docker rmi chocolatey
+      docker system prune --force
       (cd /tmp/build/assets && md5sum chocolatey.tar.* > chocolatey.tar.md5.txt)
       EOF
   - name: msys2
@@ -62,14 +61,12 @@ jobs:
       "${m_python3_path}" "${m_tools_directory_path}/travis_wait_alternative.py" sh -e << EOF
       export PS4="executing command: "; set -x
       test -n "${m_git_tag}"
-      # (cd /tmp/build/output && sh -xe "${m_tools_directory_path}/download-tar.sh" "https://github.com/p5-vbnekit/docker-common-windows-compilers/releases/download/${m_git_tag}" "chocolatey") | docker load
-      # docker build --tag msys2 --file msys2.Dockerfile .
-      # docker system prune --force
-      # docker save msys2 | split --numeric-suffixes --bytes=2GB - /tmp/build/assets/msys2.tar.
-      # docker rmi msys2 chocolatey
-      # docker system prune --force
-      (cd /tmp/build/output && sh -xe "${m_tools_directory_path}/download-tar.sh" "https://github.com/p5-vbnekit/docker-common-windows-compilers/releases/download/${m_git_tag}" "chocolatey") | tar -x
-      echo MSYS2 >> /tmp/build/output/test.txt && tar -c /tmp/build/output/test.txt | split --numeric-suffixes --bytes=2GB - /tmp/build/assets/msys2.tar.
+      (cd /tmp/build/output && sh -xe "${m_tools_directory_path}/download-tar.sh" "https://github.com/p5-vbnekit/docker-common-windows-compilers/releases/download/${m_git_tag}" "chocolatey") | docker load
+      docker build --tag msys2 --file msys2.Dockerfile .
+      docker system prune --force
+      docker save msys2 | split --numeric-suffixes --bytes=2GB - /tmp/build/assets/msys2.tar.
+      docker rmi msys2 chocolatey
+      docker system prune --force
       (cd /tmp/build/assets && md5sum msys2.tar.* > msys2.tar.md5.txt)
       EOF
   - name: chocolatey
