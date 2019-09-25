@@ -1,14 +1,14 @@
 # docker-common-windows-compilers
-Windows docker images with common compilers.
+Windows docker images with common compilers.<br/>
 Based on ["mcr.microsoft.com/windows/servercore:1803" image](https://hub.docker.com/_/microsoft-windows-servercore).
 
 ## Releases
-Since [maximum release asset size is limited by github](https://help.github.com/en/articles/about-releases#limitations-on-binary-files), I have to split them into pieces.
-This parts named as `${IMAGE}.tar[.xz].${NN}`.
-Each asset is accompanied by md5 list: `${IMAGE}.tar[.xz].md5.txt`.
-Just download all parts of the current image and call something like: `cat ${IMAGE}.tar.* | docker load`.
-Also you can use [this script](tools/download-tar.sh).
-[Download images here](../../releases).
+Since [maximum release asset size is limited by github](https://help.github.com/en/articles/about-releases#limitations-on-binary-files), I have to split them into pieces.<br/>
+This parts named as `${IMAGE}.tar[.xz].${NN}`.<br/>
+Each asset is accompanied by md5 list: `${IMAGE}.tar[.xz].md5.txt`.<br/>
+Just download all parts of the current image and call something like: `cat ${IMAGE}.tar.* | docker load`.<br/>
+Also you can use [this script](tools/download-tar.sh).<br/>
+[Download images here](../../releases).<br/>
 
 ## Images
 
@@ -18,7 +18,7 @@ Based on ["mcr.microsoft.com/windows/servercore:1803" image](https://hub.docker.
 - ["chocolatey" package manager](https://chocolatey.org)
 
 ### msys2
-Based on "chocolatey" image
+Based on "chocolatey" image.<br/>
 Added ["msys2" chocolatey package](https://chocolatey.org/packages/msys2) with:
 - mingw32/mingw-w64-i686-gcc
 - mingw64/mingw-w64-x86_64-gcc
