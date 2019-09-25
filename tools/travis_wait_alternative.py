@@ -11,12 +11,13 @@ if "__main__" == __name__:
     m_begin = time.monotonic()
     with m_event:
       while m_condition:
-        if m_event.wait(+6.0e+1): continue
+        if m_event.wait(+3.0e+2): continue
         if not m_condition: break
-        sys.stderr.write("execute.py: time elapsed: {}".format(time.monotonic() - m_begin))
+        print("", file = sys.stderr)
+        sys.stderr.write("{}: time elapsed: {}".format(__file__, time.monotonic() - m_begin))
         sys.stderr.flush()
     with m_event:
-      sys.stderr.write("execute.py: exiting", file = sys.stderr)
+      print("{}: exiting".format(__file__), file = sys.stderr)
       sys.stderr.flush()
 
   m_command = sys.argv[1:]
