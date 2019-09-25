@@ -1,6 +1,7 @@
 # docker-common-windows-compilers
 Windows docker images with common compilers.<br/>
-Based on ["mcr.microsoft.com/windows/servercore:1803" image](https://hub.docker.com/_/microsoft-windows-servercore).
+Based on ["mcr.microsoft.com/windows/servercore:1803" image](https://hub.docker.com/_/microsoft-windows-servercore).<br/>
+Auomated builds and releases powered by [travis-ci](https://travis-ci.org/p5-vbnekit/docker-common-windows-compilers).
 
 ## Releases
 Since [maximum release asset file size is limited by github](https://help.github.com/en/articles/about-releases#limitations-on-binary-files), I have to split them into parts.<br/>
