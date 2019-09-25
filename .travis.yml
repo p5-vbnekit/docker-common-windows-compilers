@@ -41,34 +41,25 @@ jobs:
     - |
       "${m_python_path}" bin/execute.py sh -e << EOF
         export PS4=".travis.yml chocolatey job: executing command: "; set -x
-        echo chocolatey > /tmp/build/output/chocolatey.tar
+        docker build --tag chocolatey --file chocolatey.Dockerfile .
+        docker system prune --force
+        docker save --output /tmp/build/output/chocolatey.tar chocolatey
+        docker rmi chocolatey
+        docker system prune --force
       EOF
-    #- |
-      #"${m_python_path}" bin/execute.py sh -e << EOF
-        #export PS4=".travis.yml chocolatey job: executing command: "; set -x
-        #docker build --tag chocolatey --file chocolatey.Dockerfile .
-        #docker save --output /tmp/build/output/chocolatey.tar chocolatey
-        #docker rmi chocolatey
-        #docker system prune --force
-      #EOF
   - name: msys2
     stage: tar-2
     script:
     - |
       "${m_python_path}" bin/execute.py sh -e << EOF
-        export PS4=".travis.yml chocolatey job: executing command: "; set -x
-        echo msys2 > /tmp/build/output/msys2.tar
+        export PS4=".travis.yml msys2 job: executing command: "; set -x
+        wget -O - "https://github.com/p5-vbnekit/docker-common-windows-compilers/releases/download/${TRAVIS_TAG}/chocolatey.tar" | docker load
+        docker build --tag msys2 --file msys2.Dockerfile .
+        docker system prune --force
+        docker save --output /tmp/build/output/msys2.tar msys2
+        docker rmi msys2 chocolatey
+        docker system prune --force
       EOF
-    #- |
-      #"${m_python_path}" bin/execute.py sh -e << EOF
-        #export PS4=".travis.yml msys2 job: executing command: "; set -x
-        #docker build --tag chocolatey --file chocolatey.Dockerfile .
-        #docker system prune --force
-        #docker build --tag msys2 --file msys2.Dockerfile .
-        #docker save --output /tmp/build/output/msys2.tar msys2
-        #docker rmi msys2 chocolatey
-        #docker system prune --force
-      #EOF
   - name: chocolatey
     stage: xz
     script:
