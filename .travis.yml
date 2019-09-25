@@ -57,7 +57,7 @@ jobs:
     script: |
       "${m_python3_path}" "${m_tools_directory_path}/travis_wait_alternative.py" sh -e << EOF
       export PS4="executing command: "; set -x
-      test -z "${m_git_tag}"
+      test -n "${m_git_tag}"
       # (cd /tmp/build/output && sh -xe "${m_tools_directory_path}/download-tar.sh" "https://github.com/p5-vbnekit/docker-common-windows-compilers/releases/download/${m_git_tag}" "chocolatey") | docker load
       # docker build --tag msys2 --file msys2.Dockerfile .
       # docker system prune --force
@@ -73,7 +73,7 @@ jobs:
     script: |
       "${m_python3_path}" "${m_tools_directory_path}/travis_wait_alternative.py" sh -e << EOF
       export PS4="executing command: "; set -x
-      test -z "${m_git_tag}"
+      test -n "${m_git_tag}"
       (cd /tmp/build/output && sh -xe "${m_tools_directory_path}/download-tar.sh" "https://github.com/p5-vbnekit/docker-common-windows-compilers/releases/download/${m_git_tag}" "chocolatey") | "${m_tools_directory_path}/xz.exe" -9 | split --numeric-suffixes --bytes=2GB - /tmp/build/assets/chocolatey.tar.xz.
       (cd /tmp/build/assets && md5sum chocolatey.tar.xz.* > chocolatey.tar.xz.md5.txt)
       EOF
@@ -82,7 +82,7 @@ jobs:
     script: |
       "${m_python3_path}" "${m_tools_directory_path}/travis_wait_alternative.py" sh -e << EOF
       export PS4="executing command: "; set -x
-      test -z "${m_git_tag}"
+      test -n "${m_git_tag}"
       (cd /tmp/build/output && sh -xe "${m_tools_directory_path}/download-tar.sh" "https://github.com/p5-vbnekit/docker-common-windows-compilers/releases/download/${m_git_tag}" "msys2") | "${m_tools_directory_path}/xz.exe" -9 | split --numeric-suffixes --bytes=2GB - /tmp/build/assets/msys2.tar.xz.
       (cd /tmp/build/assets && md5sum msys2.tar.xz.* > msys2.tar.xz.md5.txt)
       EOF
