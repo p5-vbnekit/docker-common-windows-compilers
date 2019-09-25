@@ -3,9 +3,9 @@ Windows docker images with common compilers.<br/>
 Based on ["mcr.microsoft.com/windows/servercore:1803" image](https://hub.docker.com/_/microsoft-windows-servercore).
 
 ## Releases
-Since [maximum release asset size is limited by github](https://help.github.com/en/articles/about-releases#limitations-on-binary-files), I have to split them into pieces.<br/>
+Since [maximum release asset file size is limited by github](https://help.github.com/en/articles/about-releases#limitations-on-binary-files), I have to split them into parts.<br/>
 This parts named as `${IMAGE}.tar[.xz].${NN}`.<br/>
-Each asset is accompanied by md5 list: `${IMAGE}.tar[.xz].md5.txt`.<br/>
+Each asset image is accompanied by md5 list text file: `${IMAGE}.tar[.xz].md5.txt`.<br/>
 Just download all parts of the current image and call something like: `cat ${IMAGE}.tar.* | docker load`.<br/>
 Also you can use [this script](tools/download-tar.sh).<br/>
 [Download images here](../../releases).<br/>
