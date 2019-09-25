@@ -73,6 +73,6 @@ jobs:
     script:
     - |
       "${m_python_path}" bin/execute.py sh -e << EOF
-        export PS4=".travis.yml chocolatey job: executing command: "; set -x
+        export PS4=".travis.yml msys2 job: executing command: "; set -x
         wget -O - "https://github.com/p5-vbnekit/docker-common-windows-compilers/releases/download/${TRAVIS_TAG}/msys2.tar" | bin/xz.exe -9 > /tmp/build/output/msys2.tar.xz
       EOF
