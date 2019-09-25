@@ -1,15 +1,20 @@
 # docker-common-windows-compilers
 Windows docker images with common compilers.
-Based on ["mcr.microsoft.com/windows/nanoserver:1803" image](https://hub.docker.com/_/microsoft-windows-nanoserver).
+Based on ["mcr.microsoft.com/windows/servercore:1803" image](https://hub.docker.com/_/microsoft-windows-servercore).
 
-## Download
-[Releases](../../releases)
+## Releases
+Since [maximum release asset size is limited by github](https://help.github.com/en/articles/about-releases#limitations-on-binary-files), I have to split them into pieces.
+This parts named as `${IMAGE}.tar[.xz].${NN}`.
+Each asset is accompanied by md5 list: `${IMAGE}.tar[.xz].md5.txt`.
+Just download all parts of the current image and call something like: `cat ${IMAGE}.tar.* | docker load`.
+Also you can use [this script](tools/download-tar.sh).
+[Download images here](../../releases).
 
 ## Images
 
 ### chocolatey
-Based on ["mcr.microsoft.com/windows/nanoserver:1803" image](https://hub.docker.com/_/microsoft-windows-nanoserver) with:
-- [Microsoft PowerShell](https://github.com/PowerShell/PowerShell-Docker/blob/master/release/stable/nanoserver/docker/Dockerfile)
+Based on ["mcr.microsoft.com/windows/servercore:1803" image](https://hub.docker.com/_/microsoft-windows-servercore) with:
+- [Microsoft PowerShell](https://github.com/PowerShell/PowerShell-Docker/blob/master/release/stable/servercore/docker/Dockerfile)
 - ["chocolatey" package manager](https://chocolatey.org)
 
 ### msys2
