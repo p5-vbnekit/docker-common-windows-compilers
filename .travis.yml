@@ -11,7 +11,7 @@ before_install:
 - export m_tools_directory_path="$(pwd)/tools"
 - m_python3_directory_normal_path="/tmp/build/python3"
 - export m_python3_path="${m_python3_directory_normal_path}/python.exe"
-- |
+- |-
   sh -e << EOF
   export PS4="executing command: "; set -x
   mkdir -p "/tmp/build/output" "/tmp/build/assets" "${m_python3_directory_normal_path}"
