@@ -32,13 +32,7 @@ deploy:
   on:
     branch: master
     
-after_deploy: 
-  - |
-    "${m_python3_path}" "${m_tools_directory_path}/execute.py" sh -e << EOF
-    for m_file in /tmp/build/assets/*; do
-      echo "${m_githubrelease_path}: uploading: ${m_file}"
-    done
-    EOF
+after_deploy: '"${m_python3_path}" "${m_tools_directory_path}/execute.py" sh -e "${m_tools_directory_path}/upload-assets.sh"'
 
 jobs:
   include:
