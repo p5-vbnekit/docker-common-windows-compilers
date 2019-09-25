@@ -19,7 +19,7 @@ before_install:
 - m_python3_directory_ugly_path=$(cd "${m_python3_directory_normal_path}" && cmd.exe /c 'echo %cd%' | tail -n 1)
 - choco install python3 --confirm --params /InstallDir:"${m_python3_directory_ugly_path}"
 - '"${m_python3_path}" -m pip install --upgrade pip'
-- export m_git_tag=`git tag -l | head -n 1`
+- export m_git_tag=`git tag --list --points-at HEAD | head -n 1`
 - if test -z "${m_git_tag}"; then export TRAVIS_TAG=${TRAVIS_TAG:-$(date +'%Y%m%d%H%M%S')-$(git log --format=%h -1)}; else export TRAVIS_TAG="${m_git_tag}"; fi
 
 before_deploy:
