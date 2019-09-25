@@ -26,7 +26,7 @@ routine0() {
 routine() {
   m_result=0
   m_temp_directory=$(mktemp --directory "download.XXXXXX") || return $?
-  (cd "${m_temp_directory}" && wget -O - "${m_base_url}/${m_base_name}.tar.md5.txt") | routine0) || m_result=$?
+  (cd "${m_temp_directory}" && wget -O - "${m_base_url}/${m_base_name}.tar.md5.txt" | routine0) || m_result=$?
   rm -rf "${m_temp_directory}" || true
   return ${m_result}
 }
