@@ -30,7 +30,7 @@ deploy:
   on:
     branch: master
   file_glob: true
-  file: "*"
+  file: "/tmp/build/output/*"
 
 jobs:
   include:
