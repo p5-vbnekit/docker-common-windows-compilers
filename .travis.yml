@@ -13,10 +13,10 @@ before_install:
 - export m_python3_path="${m_python3_directory_normal_path}/python.exe"
 - mkdir -p "/tmp/build/output" "/tmp/build/assets" "${m_python3_directory_normal_path}"
 - m_python3_directory_ugly_path=$(cd "${m_python3_directory_normal_path}" && cmd.exe /c 'echo %cd%' | tail -n 1)
-- echo "${m_python3_directory_ugly_path}"
 - choco install python3 --confirm --params /InstallDir:"${m_python3_directory_ugly_path}"
 - '"${m_python3_path}" -m pip install --upgrade pip'
 - '"${m_python3_path}" -m pip install --upgrade githubrelease'
+- export m_githubrelease_path="${m_python3_directory_normal_path}/Scripts/githubrelease.exe"
 - export m_git_tag=`git tag -l | head -n 1`
 - if test -z "${m_git_tag}"; then export TRAVIS_TAG=${TRAVIS_TAG:-$(date +'%Y%m%d%H%M%S')-$(git log --format=%h -1)}; else export TRAVIS_TAG="${m_git_tag}"; fi
 
@@ -32,12 +32,13 @@ deploy:
   on:
     branch: master
     
-after_deploy: |
-  "${m_python3_path}" "${m_tools_directory_path}/execute.py" sh -e << EOF
+after_deploy: 
+  - |
+    "${m_python3_path}" "${m_tools_directory_path}/execute.py" sh -e << EOF
     for m_file in /tmp/build/assets/*; do
-      echo "uploading: ${m_file}"
+      echo "${m_githubrelease_path}: uploading: ${m_file}"
     done
-  EOF
+    EOF
 
 jobs:
   include:
@@ -45,46 +46,46 @@ jobs:
     stage: tar-1
     script: |
       "${m_python3_path}" "${m_tools_directory_path}/execute.py" sh -e << EOF
-        export PS4="executing command: "; set -x
-        # docker build --tag chocolatey --file chocolatey.Dockerfile .
-        # docker system prune --force
-        # docker save chocolatey | split --numeric-suffixes --bytes=2GB - /tmp/build/assets/chocolatey.tar.
-        # docker rmi chocolatey
-        # docker system prune --force
-        echo CHOCOLATEY > /tmp/build/output/test.txt && tar -c /tmp/build/output/test.txt | split --numeric-suffixes --bytes=2GB - /tmp/build/assets/chocolatey.tar.
-        (cd /tmp/build/assets && md5sum chocolatey.tar.* > chocolatey.tar.md5.txt)
+      export PS4="executing command: "; set -x
+      # docker build --tag chocolatey --file chocolatey.Dockerfile .
+      # docker system prune --force
+      # docker save chocolatey | split --numeric-suffixes --bytes=2GB - /tmp/build/assets/chocolatey.tar.
+      # docker rmi chocolatey
+      # docker system prune --force
+      echo CHOCOLATEY > /tmp/build/output/test.txt && tar -c /tmp/build/output/test.txt | split --numeric-suffixes --bytes=2GB - /tmp/build/assets/chocolatey.tar.
+      (cd /tmp/build/assets && md5sum chocolatey.tar.* > chocolatey.tar.md5.txt)
       EOF
   - name: msys2
     stage: tar-2
     script: |
       "${m_python3_path}" "${m_tools_directory_path}/execute.py" sh -e << EOF
-        export PS4="executing command: "; set -x
-        test -z "${m_git_tag}"
-        # (cd /tmp/build/output && sh -xe "${m_tools_directory_path}/download-tar.sh" "https://github.com/p5-vbnekit/docker-common-windows-compilers/releases/download/${m_git_tag}" "chocolatey") | docker load
-        # docker build --tag msys2 --file msys2.Dockerfile .
-        # docker system prune --force
-        # docker save msys2 | split --numeric-suffixes --bytes=2GB - /tmp/build/assets/msys2.tar.
-        # docker rmi msys2 chocolatey
-        # docker system prune --force
-        (cd /tmp/build/output && sh -xe "${m_tools_directory_path}/download-tar.sh" "https://github.com/p5-vbnekit/docker-common-windows-compilers/releases/download/${m_git_tag}" "chocolatey") | tar -x
-        echo MSYS2 >> /tmp/build/output/test.txt && tar -c /tmp/build/output/test.txt | split --numeric-suffixes --bytes=2GB - /tmp/build/assets/msys2.tar.
-        (cd /tmp/build/assets && md5sum msys2.tar.* > msys2.tar.md5.txt)
+      export PS4="executing command: "; set -x
+      test -z "${m_git_tag}"
+      # (cd /tmp/build/output && sh -xe "${m_tools_directory_path}/download-tar.sh" "https://github.com/p5-vbnekit/docker-common-windows-compilers/releases/download/${m_git_tag}" "chocolatey") | docker load
+      # docker build --tag msys2 --file msys2.Dockerfile .
+      # docker system prune --force
+      # docker save msys2 | split --numeric-suffixes --bytes=2GB - /tmp/build/assets/msys2.tar.
+      # docker rmi msys2 chocolatey
+      # docker system prune --force
+      (cd /tmp/build/output && sh -xe "${m_tools_directory_path}/download-tar.sh" "https://github.com/p5-vbnekit/docker-common-windows-compilers/releases/download/${m_git_tag}" "chocolatey") | tar -x
+      echo MSYS2 >> /tmp/build/output/test.txt && tar -c /tmp/build/output/test.txt | split --numeric-suffixes --bytes=2GB - /tmp/build/assets/msys2.tar.
+      (cd /tmp/build/assets && md5sum msys2.tar.* > msys2.tar.md5.txt)
       EOF
   - name: chocolatey
     stage: xz
     script: |
       "${m_python3_path}" "${m_tools_directory_path}/execute.py" sh -e << EOF
-        export PS4="executing command: "; set -x
-        test -z "${m_git_tag}"
-        (cd /tmp/build/output && sh -xe "${m_tools_directory_path}/download-tar.sh" "https://github.com/p5-vbnekit/docker-common-windows-compilers/releases/download/${m_git_tag}" "chocolatey") | "${m_tools_directory_path}/xz.exe" -9 | split --numeric-suffixes --bytes=2GB - /tmp/build/assets/chocolatey.tar.xz.
-        (cd /tmp/build/assets && md5sum chocolatey.tar.xz.* > chocolatey.tar.xz.md5.txt)
+      export PS4="executing command: "; set -x
+      test -z "${m_git_tag}"
+      (cd /tmp/build/output && sh -xe "${m_tools_directory_path}/download-tar.sh" "https://github.com/p5-vbnekit/docker-common-windows-compilers/releases/download/${m_git_tag}" "chocolatey") | "${m_tools_directory_path}/xz.exe" -9 | split --numeric-suffixes --bytes=2GB - /tmp/build/assets/chocolatey.tar.xz.
+      (cd /tmp/build/assets && md5sum chocolatey.tar.xz.* > chocolatey.tar.xz.md5.txt)
       EOF
   - name: msys2
     stage: xz
     script: |
       "${m_python3_path}" "${m_tools_directory_path}/execute.py" sh -e << EOF
-        export PS4="executing command: "; set -x
-        test -z "${m_git_tag}"
-        (cd /tmp/build/output && sh -xe "${m_tools_directory_path}/download-tar.sh" "https://github.com/p5-vbnekit/docker-common-windows-compilers/releases/download/${m_git_tag}" "msys2") | "${m_tools_directory_path}/xz.exe" -9 | split --numeric-suffixes --bytes=2GB - /tmp/build/assets/msys2.tar.xz.
-        (cd /tmp/build/assets && md5sum msys2.tar.xz.* > msys2.tar.xz.md5.txt)
+      export PS4="executing command: "; set -x
+      test -z "${m_git_tag}"
+      (cd /tmp/build/output && sh -xe "${m_tools_directory_path}/download-tar.sh" "https://github.com/p5-vbnekit/docker-common-windows-compilers/releases/download/${m_git_tag}" "msys2") | "${m_tools_directory_path}/xz.exe" -9 | split --numeric-suffixes --bytes=2GB - /tmp/build/assets/msys2.tar.xz.
+      (cd /tmp/build/assets && md5sum msys2.tar.xz.* > msys2.tar.xz.md5.txt)
       EOF
