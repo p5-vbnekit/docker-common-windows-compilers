@@ -4,6 +4,8 @@
 import sys, subprocess, threading, time
 
 if "__main__" == __name__:
+  from __main__ import __file__ as m_main_path
+
   m_condition = True
   m_event = threading.Condition()
 
@@ -14,10 +16,10 @@ if "__main__" == __name__:
         if m_event.wait(+3.0e+2): continue
         if not m_condition: break
         print("", file = sys.stderr)
-        sys.stderr.write("{}: time elapsed: {}".format(__file__, time.monotonic() - m_begin))
+        sys.stderr.write("{}: time elapsed: {}".format(m_main_path, time.monotonic() - m_begin))
         sys.stderr.flush()
     with m_event:
-      print("{}: exiting".format(__file__), file = sys.stderr)
+      print("{}: exiting".format(m_main_path), file = sys.stderr)
       sys.stderr.flush()
 
   m_command = sys.argv[1:]
