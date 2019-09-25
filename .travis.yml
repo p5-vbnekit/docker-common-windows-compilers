@@ -33,7 +33,7 @@ deploy:
     branch: master
     
 after_deploy:
-  script: |-
+  script: |
     "${m_python3_path}" "${m_tools_directory_path}/execute.py" sh -e << EOF
       for m_file in /tmp/build/assets/*; do
         echo "uploading: ${m_file}"
@@ -44,7 +44,7 @@ jobs:
   include:
   - name: chocolatey
     stage: tar-1
-    script: |-
+    script: |
       "${m_python3_path}" "${m_tools_directory_path}/execute.py" sh -e << EOF
         export PS4="executing command: "; set -x
         # docker build --tag chocolatey --file chocolatey.Dockerfile .
@@ -57,7 +57,7 @@ jobs:
       EOF
   - name: msys2
     stage: tar-2
-    script: |-
+    script: |
       "${m_python3_path}" "${m_tools_directory_path}/execute.py" sh -e << EOF
         export PS4="executing command: "; set -x
         test -z "${m_git_tag}"
@@ -73,7 +73,7 @@ jobs:
       EOF
   - name: chocolatey
     stage: xz
-    script: |-
+    script: |
       "${m_python3_path}" "${m_tools_directory_path}/execute.py" sh -e << EOF
         export PS4="executing command: "; set -x
         test -z "${m_git_tag}"
@@ -82,7 +82,7 @@ jobs:
       EOF
   - name: msys2
     stage: xz
-    script: |-
+    script: |
       "${m_python3_path}" "${m_tools_directory_path}/execute.py" sh -e << EOF
         export PS4="executing command: "; set -x
         test -z "${m_git_tag}"
