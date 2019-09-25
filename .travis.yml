@@ -14,11 +14,9 @@ before_install:
 - mkdir -p "/tmp/build/output" "/tmp/build/assets" "${m_python3_directory_normal_path}"
 - m_python3_directory_ugly_path=$(cd "${m_python3_directory_normal_path}" && cmd.exe /c 'echo %cd%' | tail -n 1)
 - echo "${m_python3_directory_ugly_path}"
-- choco install python3 --confirm --params "/InstallDir:\"${m_python3_directory_ugly_path}\""
-- |-
-  "${m_python3_path}\" -m pip install --upgrade pip
-- |-
-  "${m_python3_path}\" -m pip install --upgrade githubrelease
+- choco install python3 --confirm --params /InstallDir:"${m_python3_directory_ugly_path}"
+- '"${m_python3_path}" -m pip install --upgrade pip'
+- '"${m_python3_path}" -m pip install --upgrade githubrelease'
 - export m_git_tag=`git tag -l | head -n 1`
 - if test -z "${m_git_tag}"; then export TRAVIS_TAG=${TRAVIS_TAG:-$(date +'%Y%m%d%H%M%S')-$(git log --format=%h -1)}; else export TRAVIS_TAG="${m_git_tag}"; fi
 
@@ -35,8 +33,7 @@ deploy:
     branch: master
     
 after_deploy:
-  script:
-  - |
+  script: |-
     "${m_python3_path}" "${m_tools_directory_path}/execute.py" sh -e << EOF
       for m_file in /tmp/build/assets/*; do
         echo "uploading: ${m_file}"
@@ -47,8 +44,7 @@ jobs:
   include:
   - name: chocolatey
     stage: tar-1
-    script:
-    - |
+    script: |-
       "${m_python3_path}" "${m_tools_directory_path}/execute.py" sh -e << EOF
         export PS4="executing command: "; set -x
         # docker build --tag chocolatey --file chocolatey.Dockerfile .
@@ -61,8 +57,7 @@ jobs:
       EOF
   - name: msys2
     stage: tar-2
-    script:
-    - |
+    script: |-
       "${m_python3_path}" "${m_tools_directory_path}/execute.py" sh -e << EOF
         export PS4="executing command: "; set -x
         test -z "${m_git_tag}"
@@ -78,8 +73,7 @@ jobs:
       EOF
   - name: chocolatey
     stage: xz
-    script:
-    - |
+    script: |-
       "${m_python3_path}" "${m_tools_directory_path}/execute.py" sh -e << EOF
         export PS4="executing command: "; set -x
         test -z "${m_git_tag}"
@@ -88,8 +82,7 @@ jobs:
       EOF
   - name: msys2
     stage: xz
-    script:
-    - |
+    script: |-
       "${m_python3_path}" "${m_tools_directory_path}/execute.py" sh -e << EOF
         export PS4="executing command: "; set -x
         test -z "${m_git_tag}"
