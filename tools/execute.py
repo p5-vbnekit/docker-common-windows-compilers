@@ -13,12 +13,15 @@ if "__main__" == __name__:
       while m_condition:
         if m_event.wait(+6.0e+1): continue
         if not m_condition: break
-        print("execute.py: time elapsed: {}".format(time.monotonic() - m_begin), file = sys.stderr)
-    with m_event: print("execute.py: exiting", file = sys.stderr)
+        sys.stderr.write("execute.py: time elapsed: {}".format(time.monotonic() - m_begin))
+        sys.stderr.flush()
+    with m_event:
+      sys.stderr.write("execute.py: exiting", file = sys.stderr)
+      sys.stderr.flush()
 
   m_command = sys.argv[1:]
 
-  m_thread = threading.Thread(target = thread_routine, daemon = True)
+  m_thread = threading.Thread(target = thread_routine, daemon = False)
   m_thread.start()
 
   try:
@@ -27,7 +30,6 @@ if "__main__" == __name__:
     def thread_routine():
       for m_line in m_process.stderr:
         with m_event:
-          sys.stderr.write("execute.py: stderr: ")
           sys.stderr.write(m_line.decode())
           sys.stderr.flush()
           m_event.notify_all()
