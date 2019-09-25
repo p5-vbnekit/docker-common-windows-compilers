@@ -7,7 +7,7 @@ export m_base_name="$2"
 test -n "${m_base_name}"
 
 routine1() {
-  wget --no-verbose --output-document - "$3" "${1}/${3}" && (echo "$2" | md5sum -c - 1>&2) && cat "$3"
+  wget --no-verbose --output-document "$3" "${1}/${3}" && (echo "$2" | md5sum -c - 1>&2) && cat "$3"
 }
 
 routine0() {
