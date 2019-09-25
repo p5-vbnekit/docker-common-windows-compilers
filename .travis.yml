@@ -9,14 +9,17 @@ stages:
 
 before_install:
 - m_tools_directory_path="$(pwd)/tools"
-- m_python_directory_normal_path="/tmp/build/python3"
-- mkdir -p "/tmp/build/output" "/tmp/build/assets" "${m_python_directory_normal_path}"
-- m_python_directory_ugly_path=`cd "${m_python_directory_normal_path}" && cmd.exe /c 'echo %cd%' | tail -n 1`
-- echo "${m_python_directory_ugly_path}"
-- export m_python3_path="${m_python_directory_normal_path}/python.exe"
-- choco install python3 --confirm --params "/InstallDir:\"${m_python_directory_ugly_path}\""
-- "${m_python3_path}" -m pip install --upgrade pip
-- "${m_python3_path}" -m pip install --upgrade githubreleases
+- m_python3_directory_normal_path="/tmp/build/python3"
+- mkdir -p "/tmp/build/output" "/tmp/build/assets" "${m_python3_directory_normal_path}"
+- m_python3_directory_ugly_path=`cd "${m_python3_directory_normal_path}" && cmd.exe /c 'echo %cd%' | tail -n 1`
+- echo "${m_python3_directory_ugly_path}"
+- export m_python3_path="${m_python3_directory_normal_path}/python.exe"
+- choco install python3 --confirm --params "/InstallDir:\"${m_python3_directory_ugly_path}\""
+- |
+  sh -xe << EOF
+    "${m_python3_path}" -m pip install --upgrade pip
+    "${m_python3_path}" -m pip install --upgrade githubreleases
+  EOF
 - export m_git_tag=`git tag -l | head -n 1`
 - if test -z "${m_git_tag}"; then export TRAVIS_TAG=${TRAVIS_TAG:-$(date +'%Y%m%d%H%M%S')-$(git log --format=%h -1)}; else export TRAVIS_TAG="${m_git_tag}"; fi
 
@@ -31,7 +34,7 @@ deploy:
     secure: usn89BK6M+WmF1OjqCr+o+M7lTFhrPa8FLCfDoddwdT9ecbhQ7tEI4/CePyFIu5FUNdgFY++YeHv9MhzPdFo5UkfRP/RMWGtO6AKN5I+VOPZSf16xcXRhXiEgpA8Lr5l9Yf+KfSohVJNZj+iUGWqtS3hbKb/h57OP5jawMUYiS44/2++Xj6vY+Teq26+5njOY94nW7xfhreH1Xj0cObmPMlJPml8nj3A6M4HaJdUWuuv2c+osOzzX8dSOvaFDNdH7Am6QAo1GI4bQvyJmfpNf6peGPjv048bfPP/iU4otxSSIucpUHmp1TjXi6wtMeIxt7FFwFHe86lOVFzGQWat0DpZM7dad+vDTJVVhJH8vDN4hbY6FKQIOyEOUtiej4t/CCd4PaNrOGsDFl8jYY/I43Z/0aQqImQlfEtsgdc8Kozc+pku8xNGK23FNoMif9Mb1XnANz3tG+TpAuHOmoK5wuyjqDF8WBzL7ISt+QDeVRtgnlgEnvCpklaLsddgv41Gi76oJ5xU3cm3hKlEWiD6PtMWLFJnXMFISp6rrst0SdsoK/kGZbHX5PXxSg27yfIeWYAsSssZAJM7tXuhmGI5WOnY1mQKwH61lisYLY1uncOTrBiqX59FzpyYRvnh9KZuChAa163JRzKlYh5bmbxNPpoMm+Gliv461W7NaPQQwzM=
   on:
     branch: master
-
+    
 after_deploy:
   script:
   - |
