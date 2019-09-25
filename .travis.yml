@@ -2,6 +2,10 @@ os: windows
 language: cpp
 services: docker
 
+branches:
+  only:
+  - master
+
 stages:
 - name: tar-1
 - name: tar-2
