@@ -30,7 +30,11 @@ deploy:
   on:
     branch: master
   file_glob: true
-  file: /tmp/build/output/*
+  file:
+  - /tmp/build/output/msys2.tar
+  - /tmp/build/output/chocolatey.tar
+  - /tmp/build/output/msys2.tar.xz
+  - /tmp/build/output/chocolatey.tar.xz
 
 jobs:
   include:
