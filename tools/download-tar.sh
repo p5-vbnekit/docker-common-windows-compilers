@@ -7,7 +7,7 @@ export m_base_name="$2"
 test -n "${m_base_name}"
 
 routine1() {
-  wget -O "$3" "${1}/${3}" && (echo "$2" | md5sum -c - 1>&2) && cat "$3"
+  wget --no-versbose --output-document - "$3" "${1}/${3}" && (echo "$2" | md5sum -c - 1>&2) && cat "$3"
 }
 
 routine0() {
@@ -26,7 +26,7 @@ routine0() {
 routine() {
   m_result=0
   m_temp_directory=$(mktemp --directory "download.XXXXXX") || return $?
-  (cd "${m_temp_directory}" && wget -O - "${m_base_url}/${m_base_name}.tar.md5.txt" | routine0) || m_result=$?
+  (cd "${m_temp_directory}" && wget --no-verbose --output-document - "${m_base_url}/${m_base_name}.tar.md5.txt" | routine0) || m_result=$?
   rm -rf "${m_temp_directory}" || true
   return ${m_result}
 }
