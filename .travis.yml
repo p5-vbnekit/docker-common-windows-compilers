@@ -8,17 +8,17 @@ stages:
 - name: xz
 
 before_install:
-- m_tools_directory_path="$(pwd)/tools"
+- export m_tools_directory_path="$(pwd)/tools"
 - m_python3_directory_normal_path="/tmp/build/python3"
-- mkdir -p "/tmp/build/output" "/tmp/build/assets" "${m_python3_directory_normal_path}"
-- m_python3_directory_ugly_path=`cd "${m_python3_directory_normal_path}" && cmd.exe /c 'echo %cd%' | tail -n 1`
-- echo "${m_python3_directory_ugly_path}"
 - export m_python3_path="${m_python3_directory_normal_path}/python.exe"
-- choco install python3 --confirm --params "/InstallDir:\"${m_python3_directory_ugly_path}\""
 - |
-  sh -xe << EOF
+  sh -e << EOF
+     export PS4="executing command: "; set -x
+     mkdir -p "/tmp/build/output" "/tmp/build/assets" "${m_python3_directory_normal_path}"
+     m_python3_directory_ugly_path=`cd "${m_python3_directory_normal_path}" && cmd.exe /c 'echo %cd%' | tail -n 1`
+     choco install python3 --confirm --params "/InstallDir:\"${m_python3_directory_ugly_path}\""
     "${m_python3_path}" -m pip install --upgrade pip
-    "${m_python3_path}" -m pip install --upgrade githubreleases
+    "${m_python3_path}" -m pip install --upgrade githubrelease
   EOF
 - export m_git_tag=`git tag -l | head -n 1`
 - if test -z "${m_git_tag}"; then export TRAVIS_TAG=${TRAVIS_TAG:-$(date +'%Y%m%d%H%M%S')-$(git log --format=%h -1)}; else export TRAVIS_TAG="${m_git_tag}"; fi
@@ -51,7 +51,7 @@ jobs:
     script:
     - |
       "${m_python3_path}" "${m_tools_directory_path}/execute.py" sh -e << EOF
-        export PS4=".travis.yml chocolatey job: executing command: "; set -x
+        export PS4="executing command: "; set -x
         # docker build --tag chocolatey --file chocolatey.Dockerfile .
         # docker system prune --force
         # docker save chocolatey | split --numeric-suffixes --bytes=2GB - /tmp/build/assets/chocolatey.tar.
@@ -65,7 +65,7 @@ jobs:
     script:
     - |
       "${m_python3_path}" "${m_tools_directory_path}/execute.py" sh -e << EOF
-        export PS4=".travis.yml msys2 job: executing command: "; set -x
+        export PS4="executing command: "; set -x
         test -z "${m_git_tag}"
         # (cd /tmp/build/output && sh -xe "${m_tools_directory_path}/download-tar.sh" "https://github.com/p5-vbnekit/docker-common-windows-compilers/releases/download/${m_git_tag}" "chocolatey") | docker load
         # docker build --tag msys2 --file msys2.Dockerfile .
@@ -82,7 +82,7 @@ jobs:
     script:
     - |
       "${m_python3_path}" "${m_tools_directory_path}/execute.py" sh -e << EOF
-        export PS4=".travis.yml chocolatey job: executing command: "; set -x
+        export PS4="executing command: "; set -x
         test -z "${m_git_tag}"
         (cd /tmp/build/output && sh -xe "${m_tools_directory_path}/download-tar.sh" "https://github.com/p5-vbnekit/docker-common-windows-compilers/releases/download/${m_git_tag}" "chocolatey") | "${m_tools_directory_path}/xz.exe" -9 | split --numeric-suffixes --bytes=2GB - /tmp/build/assets/chocolatey.tar.xz.
         (cd /tmp/build/assets && md5sum chocolatey.tar.xz.* > chocolatey.tar.xz.md5.txt)
@@ -92,7 +92,7 @@ jobs:
     script:
     - |
       "${m_python3_path}" "${m_tools_directory_path}/execute.py" sh -e << EOF
-        export PS4=".travis.yml msys2 job: executing command: "; set -x
+        export PS4="executing command: "; set -x
         test -z "${m_git_tag}"
         (cd /tmp/build/output && sh -xe "${m_tools_directory_path}/download-tar.sh" "https://github.com/p5-vbnekit/docker-common-windows-compilers/releases/download/${m_git_tag}" "msys2") | "${m_tools_directory_path}/xz.exe" -9 | split --numeric-suffixes --bytes=2GB - /tmp/build/assets/msys2.tar.xz.
         (cd /tmp/build/assets && md5sum msys2.tar.xz.* > msys2.tar.xz.md5.txt)
