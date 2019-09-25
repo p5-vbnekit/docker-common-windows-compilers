@@ -17,7 +17,7 @@ routine0() {
     m_md5_name=$(echo -n "${m_md5_line}" | tail -c +35) || return $?
     test -n "${m_md5_name}" || return $?
     m_result=0
-    routine1 "${m_base_url}" "${m_md5_line}" "${m_md5_name}" || m_result=$?
+    routine1 "$1" "${m_md5_line}" "${m_md5_name}" || m_result=$?
     rm -f "${m_md5_name}" || true
     return ${m_result}
   done
@@ -26,7 +26,7 @@ routine0() {
 routine() {
   m_result=0
   m_temp_directory=$(mktemp --directory "download.XXXXXX") || return $?
-  (cd "${m_temp_directory}" && wget --no-verbose --output-document - "${m_base_url}/${m_base_name}.tar.md5.txt" | routine0) || m_result=$?
+  (cd "${m_temp_directory}" && wget --no-verbose --output-document - "${m_base_url}/${m_base_name}.tar.md5.txt" | routine0 "${m_base_url}") || m_result=$?
   rm -rf "${m_temp_directory}" || true
   return ${m_result}
 }
