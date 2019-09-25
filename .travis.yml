@@ -14,13 +14,13 @@ before_install:
 - echo "${m_python_directory_ugly_path}"
 - export m_python_path="${m_python_directory_normal_path}/python.exe"
 - choco install python3 --confirm --params "/InstallDir:\"${m_python_directory_ugly_path}\""
-- echo ${TRAVIS_TAG}
-- export TRAVIS_TAG=${TRAVIS_TAG:-$(date +'%Y%m%d%H%M%S')-$(git log --format=%h -1)}
+- export m_git_tag=`git tag -l | head -n 1`
+- if test -z "${m_git_tag}"; then export TRAVIS_TAG=${TRAVIS_TAG:-$(date +'%Y%m%d%H%M%S')-$(git log --format=%h -1)}; else export TRAVIS_TAG="${m_git_tag}"; fi
 
 before_deploy:
 - git config --local user.name "p5-vbnekit"
 - git config --local user.email "vbnekit@p5y.su"
-- git tag "${TRAVIS_TAG}"
+- test -z "${m_git_tag}" && git tag -a "${TRAVIS_TAG}" -m "${TRAVIS_TAG}"
 - cd /tmp/build/output
 
 deploy:
