@@ -1,6 +1,19 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+"""
+arguments: [yaml-style options string]
+
+yaml-style options string:
+  name: string, image file name; None or False or empty string for default; default is "chocolatey.tar"
+  repo: string; None or False or empty string for default; default is "p5-vbnekit/docker-common-windows-compilers"
+  release: string; None or False or empty string for default; default is latest
+  token: string; can be None or False
+  output: string, None or False or empty string for default; default is stdout
+  verbose: boolean, None or False for default; default is True
+  buffer_size: integer, None or False for default; default is 128 * 1024 * 1024
+"""
+
 import os, io, re, sys, yaml, ctypes, hashlib, github, urllib.request
 
 if "__main__" == __name__: from __main__ import __file__ as main_path

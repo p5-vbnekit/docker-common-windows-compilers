@@ -13,7 +13,7 @@ Since [maximum release asset file size is limited by github](https://help.github
 This parts named as `${IMAGE}.tar[.xz].${NN}`.<br/>
 Each asset image is accompanied by md5 list text file: `${IMAGE}.tar[.xz].md5.txt`.<br/>
 Just download all parts of the current image and call something like: `cat ${IMAGE}.tar.* | docker load`.<br/>
-Also you can use [this script](tools/download-tar.sh).<br/>
+Also you can use [this script (tools/download_released_image.py)](tools/download_released_image.py).<br/>
 
 ## Images
 
