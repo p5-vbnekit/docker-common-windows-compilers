@@ -206,7 +206,7 @@ def routine():
         m_try_number = 0
         while True:
           m_try_number += 1
-          m_log("{}: trying to open url, try #{}, asset = \"{}\", url = \"{}\"".format(main_path, m_try_number, md5_record.name, m_asset.browser_download_url), file = sys.stderr)
+          m_log("{}: opening url, try #{}, asset = \"{}\", url = \"{}\"".format(main_path, m_try_number, md5_record.name, m_asset.browser_download_url), file = sys.stderr)
           try: return routine()
           except OSError:
             traceback.print_exc(file = sys.stderr)
@@ -241,7 +241,7 @@ def routine():
 
         try:
           m_md5_digest = m_context.md5.hexdigest()
-          m_log("{}: asset \"{}\" was processed, size = {}, calculated md5 = \"{}\", download url = \"{}\"".format(main_path, md5_record.name, m_context.offset, m_md5_digest, m_asset.browser_download_url), file = sys.stderr)
+          m_log("{}: asset \"{}\" was processed, size = {}, md5 = \"{}\"".format(main_path, md5_record.name, m_context.offset, m_md5_digest), file = sys.stderr)
           if m_asset.size != m_context.offset: raise RuntimeError("size mismatch")
           if md5_record.digest != m_md5_digest: raise RuntimeError("md5 mismatch")
         except:
@@ -260,7 +260,7 @@ def routine():
       m_try_number = 0
       while True:
         m_try_number += 1
-        m_log("{}: processing asset \"{}\", try #{}, expected size = {}, expected md5 = \"{}\", download url = \"{}\"".format(main_path, md5_record.name, m_try_number, m_asset.size, md5_record.digest, m_asset.browser_download_url), file = sys.stderr)
+        m_log("{}: processing asset \"{}\", try #{}, expected size = {}, expected md5 = \"{}\"".format(main_path, md5_record.name, m_try_number, m_asset.size, md5_record.digest), file = sys.stderr)
         if routine(m_try_number): break
         m_log("{}: waiting 5 seconds".format(main_path), file = sys.stderr)
         time.sleep(+5.0e+0)
