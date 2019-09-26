@@ -153,7 +153,7 @@ def routine():
         @staticmethod
         def is_regular_file(): return True
         def write(self, data): return self.__stream.write(data)
-        def flush(self): return self.__stream.flush(data)
+        def flush(self): return self.__stream.flush()
         def close(self): return self.__close()
         def remove(self):
           m_path = self.__path
@@ -168,7 +168,7 @@ def routine():
       @staticmethod
       def write(data): return sys.stdout.buffer.write(data)
       @staticmethod
-      def flush(): return sys.stdout.flush(data)
+      def flush(): return sys.stdout.flush()
     return Result()
 
   def do_cleanup_operation(operation):
