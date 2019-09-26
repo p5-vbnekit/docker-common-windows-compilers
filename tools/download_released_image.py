@@ -182,7 +182,8 @@ def routine():
   try:
     def process_asset(md5_record):
       m_asset = m_assets[md5_record.name]
-      m_log("{}: processing asset \"{}\", expected md5 = \"{}\", download url = \"{}\"".format(main_path, md5_record.name, md5_record.digest, m_asset.browser_download_url), file = sys.stderr)
+      m_log("{}: processing asset \"{}\", size = {}, expected md5 = \"{}\", download url = \"{}\"".format(main_path, md5_record.name, m_asset.size, md5_record.digest, m_asset.browser_download_url), file = sys.stderr)
+      if not (0 < m_asset.size): return
 
       m_md5 = hashlib.md5()
       with urllib.request.urlopen(m_asset.browser_download_url) as m_response:
@@ -200,8 +201,9 @@ def routine():
         if not routine(): raise RuntimeError("unexpected EOF")
         while routine(): pass
 
-        m_md5_digest = m_md5.digest()
-        m_log("{}: asset \"{}\" was processed, calculated md5 = \"{}\", download url = \"{}\"".format(main_path, md5_record.name, m_md5_digest, m_asset.browser_download_url), file = sys.stderr)
+        m_md5_digest = m_md5.hexdigest()
+        m_log("{}: asset \"{}\" was processed, size = {}, calculated md5 = \"{}\", download url = \"{}\"".format(main_path, md5_record.name, m_total[0], m_md5_digest, m_asset.browser_download_url), file = sys.stderr)
+        if m_asset.size != m_total[0]: raise RuntimeError("size mismatch")
         if md5_record.digest != m_md5_digest: raise RuntimeError("md5 mismatch")
 
     for m_md5_record in make_md5(): process_asset(m_md5_record)
