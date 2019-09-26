@@ -22,6 +22,7 @@ def routine():
         m_default_release = None
         m_default_token = None
         m_default_output = None
+        m_default_verbose = True
         m_default_buffer_size = 128 * 1024 * 1024
         if "name" in m_dictionary:
           self.__name = m_dictionary["name"]
@@ -48,9 +49,15 @@ def routine():
           if not self.__output: self.__output = m_default_output
           elif not isinstance(self.__output, str): raise TypeError("invalid options, output: string expected")
         else: self.__output = m_default_output
+        if "verbose" in m_dictionary:
+          self.__verbose = m_dictionary["verbose"]
+          if self.__verbose is None: self.__verbose = m_default_verbose
+          elif not isinstance(self.__verbose, bool): raise TypeError("invalid options, verbose: boolean expected")
+        else: self.__verbose = m_default_verbose
         if "buffer_size" in m_dictionary:
           self.__buffer_size = m_dictionary["buffer_size"]
-          if not self.__buffer_size: self.__buffer_size = m_default_buffer_size
+          if self.__buffer_size is None: self.__buffer_size = m_default_buffer_size
+          elif self.__buffer_size is False: self.__buffer_size = m_default_buffer_size
           else:
             if not isinstance(self.__buffer_size, int): raise TypeError("invalid options, buffer_size: positive integer expected")
             if not (0 < self.__buffer_size): raise ValueError("invalid options, buffer_size: positive integer expected")
@@ -60,13 +67,23 @@ def routine():
       release = property(lambda self: self.__release)
       token = property(lambda self: self.__token)
       output = property(lambda self: self.__output)
+      verbose = property(lambda self: self.__verbose)
       buffer_size = property(lambda self: self.__buffer_size)
     return Result()
 
   m_options = make_options()
 
-  print("{}: name = \"{}\"".format(main_path, m_options.name), file = sys.stderr)
-  print("{}: repo = \"{}\"".format(main_path, m_options.repo), file = sys.stderr)
+  def make_log():
+    if m_options.verbose:
+      def routine(*args, **kwargs): return print(*args, **kwargs)
+      return routine
+    def routine(*args, **kwargs): pass
+    return routine
+
+  m_log = make_log()
+
+  m_log("{}: name = \"{}\"".format(main_path, m_options.name), file = sys.stderr)
+  m_log("{}: repo = \"{}\"".format(main_path, m_options.repo), file = sys.stderr)
 
   m_repo = github.Github(m_options.token).get_repo(m_options.repo)
   m_latest_release = m_repo.get_latest_release()
@@ -78,10 +95,11 @@ def routine():
 
   m_release = make_release()
 
-  print("{}: release = {}".format(main_path, "\"{}\"{}".format(m_release.tag_name, ", latest" if m_latest_release.id == m_release.id else "")), file = sys.stderr)
-  print("{}: output = {}".format(main_path, "\"{}\"".format(m_options.output) if m_options.output else "stdout"), file = sys.stderr)
-  print("{}: token = {}".format(main_path, "\"***\"" if m_options.token else None), file = sys.stderr)
-  print("{}: buffer_size = {}".format(main_path, m_options.buffer_size), file = sys.stderr)
+  m_log("{}: release = {}".format(main_path, "\"{}\"{}".format(m_release.tag_name, ", latest" if m_latest_release.id == m_release.id else "")), file = sys.stderr)
+  m_log("{}: token = {}".format(main_path, "\"***\"" if m_options.token else None), file = sys.stderr)
+  m_log("{}: output = {}".format(main_path, "\"{}\"".format(m_options.output) if m_options.output else "stdout"), file = sys.stderr)
+  m_log("{}: verbose = {}".format(main_path, m_options.verbose), file = sys.stderr)
+  m_log("{}: buffer_size = {}".format(main_path, m_options.buffer_size), file = sys.stderr)
 
   def make_assets():
     return { m_asset.name:m_asset for m_asset in m_release.get_assets() }
@@ -113,7 +131,7 @@ def routine():
   m_buffer = ctypes.create_string_buffer(m_options.buffer_size)
 
   def make_output():
-    if m_outions.output:
+    if m_options.output:
       class Result(object):
         def __init__(self, *args, **kwargs):
           super().__init__(*args, **kwargs)
@@ -127,17 +145,19 @@ def routine():
         def remove(self):
           m_path = self.__path
           self.__path = None
-          if m_path: os.remove(self.__path)
+          if m_path: os.remove(m_path)
       return Result()
     class Result(object):
       def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+      @staticmethod
       def is_regular_file(): return False
       @staticmethod
       def write(data): return sys.stdout.buffer.write(data)
       @staticmethod
       def flush(): return sys.stdout.flush(data)
-    
+    return Result()
+
   def do_cleanup_operation(operation):
     try: operation()
     except:
@@ -149,7 +169,7 @@ def routine():
   try:
     def process_asset(md5_record):
       m_asset = m_assets[md5_record.name]
-      print("{}: processing asset \"{}\", hash = \"{}\", url = \"{}\"".format(main_path, md5_record.name, md5_record.hash, m_asset.browser_download_url), file = sys.stderr)
+      m_log("{}: processing asset \"{}\", hash = \"{}\", url = \"{}\"".format(main_path, md5_record.name, md5_record.hash, m_asset.browser_download_url), file = sys.stderr)
 
       m_signature = hashlib.md5()
       with urllib.request.urlopen(m_asset.browser_download_url) as m_response:
@@ -159,8 +179,8 @@ def routine():
           if not (0 < m_size): return False
           m_signature.update(m_buffer[:m_size])
           m_total[0] += m_size
-          print("{}: processing asset \"{}\" progress, size = \"{}\", url = \"{}\"".format(main_path, md5_record.name, m_total[0], m_asset.browser_download_url), file = sys.stderr)
-          m_output.buffer.write(m_buffer[:m_size])
+          m_log("{}: processing asset \"{}\" progress, size = \"{}\", url = \"{}\"".format(main_path, md5_record.name, m_total[0], m_asset.browser_download_url), file = sys.stderr)
+          m_output.write(m_buffer[:m_size])
           m_output.flush()
           return True
 
