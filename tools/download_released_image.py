@@ -192,9 +192,9 @@ def routine():
           if not (0 < m_size): return False
           m_signature.update(m_buffer[:m_size])
           m_total[0] += m_size
-          m_log("{}: processing asset \"{}\" progress, size = \"{}\", url = \"{}\"".format(main_path, md5_record.name, m_total[0], m_asset.browser_download_url), file = sys.stderr)
           m_output.write(m_buffer[:m_size])
           m_output.flush()
+          m_log("{}: {} bytes of asset \"{}\" was processed, url = \"{}\"".format(main_path, md5_record.name, m_total[0], m_asset.browser_download_url), file = sys.stderr)
           return True
 
         if not routine(): raise RuntimeError("unexpected EOF")
