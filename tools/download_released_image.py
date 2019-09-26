@@ -122,7 +122,7 @@ def routine():
   def make_md5():
     m_txt = "{}.md5.txt"
     class Record(object):
-      __hash_pattern = re.compile("^[0-9a-f]{32}$")
+      __digest_pattern = re.compile("^[0-9a-f]{32}$")
       __spacer_pattern = re.compile("^ [\\* ]$")
       __name_pattern = re.compile("^[^\\/]+$")
       def __init__(self, line):
@@ -130,14 +130,14 @@ def routine():
         m_line = line.rstrip("\r\n")
         m_line_length = len(m_line)
         if not (34 < m_line_length): raise ValueError("invalid md5 line")
-        self.__hash = m_line[:32]
-        if self.__hash_pattern.match(self.__hash) is None: raise ValueError("invalid hash in md5 line")
+        self.__digest = m_line[:32]
+        if self.__digest_pattern.match(self.__digest) is None: raise ValueError("invalid digest in md5 line")
         if self.__spacer_pattern.match(m_line[32:34]) is None: raise ValueError("invalid spacer in md5 line")
         self.__name = m_line[34:]
         if self.__name_pattern.match(self.__name) is None: raise ValueError("invalid name in md5 line")
         if m_txt == self.__name: raise ValueError("invalid name in md5 line")
       name = property(lambda self: self.__name)
-      hash = property(lambda self: self.__hash)
+      digest = property(lambda self: self.__digest)
     m_asset = m_assets["{}.md5.txt".format(m_options.name)]
     with urllib.request.urlopen(m_asset.browser_download_url) as m_response: return tuple([Record(m_line.decode("utf-8")) for m_line in m_response.readlines()])
 
@@ -182,25 +182,27 @@ def routine():
   try:
     def process_asset(md5_record):
       m_asset = m_assets[md5_record.name]
-      m_log("{}: processing asset \"{}\", hash = \"{}\", url = \"{}\"".format(main_path, md5_record.name, md5_record.hash, m_asset.browser_download_url), file = sys.stderr)
+      m_log("{}: processing asset \"{}\", expected md5 = \"{}\", download url = \"{}\"".format(main_path, md5_record.name, md5_record.digest, m_asset.browser_download_url), file = sys.stderr)
 
-      m_signature = hashlib.md5()
+      m_md5 = hashlib.md5()
       with urllib.request.urlopen(m_asset.browser_download_url) as m_response:
         m_total = [0]
         def routine():
           m_size = m_response.readinto(m_buffer)
           if not (0 < m_size): return False
-          m_signature.update(m_buffer[:m_size])
+          m_md5.update(m_buffer[:m_size])
           m_total[0] += m_size
           m_output.write(m_buffer[:m_size])
           m_output.flush()
-          m_log("{}: {} bytes of asset \"{}\" was processed, url = \"{}\"".format(main_path, md5_record.name, m_total[0], m_asset.browser_download_url), file = sys.stderr)
+          m_log("{}: {} bytes of asset \"{}\" was processed, download url = \"{}\"".format(main_path, md5_record.name, m_total[0], m_asset.browser_download_url), file = sys.stderr)
           return True
 
         if not routine(): raise RuntimeError("unexpected EOF")
         while routine(): pass
 
-        if md5_record.hash != m_signature.digest(): raise RuntimeError("hash mismatch")
+        m_md5_digest = m_md5.digest()
+        m_log("{}: asset \"{}\" was processed, calculated md5 = \"{}\", download url = \"{}\"".format(main_path, md5_record.name, m_md5_digest, m_asset.browser_download_url), file = sys.stderr)
+        if md5_record.digest != m_md5_digest: raise RuntimeError("md5 mismatch")
 
     for m_md5_record in make_md5(): process_asset(m_md5_record)
     m_output.flush()
