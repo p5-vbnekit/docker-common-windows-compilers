@@ -8,18 +8,19 @@ test -n "${m_base_name}"
 
 routine1() {
   wget --no-verbose --output-document "$3" "${1}/${3}" && (echo "$2" | md5sum -c - 1>&2) && cat "$3"
+  m_result=$?
+  rm -f "${m_md5_name}" || true
+  return ${m_result}
 }
 
 routine0() {
   while read m_md5_line; do
+    echo "line: ${m_md5_line}" >&2
     m_md5_hash=$(echo -n "${m_md5_line}" | sed -rne 's/^([0-9a-f]{32} [ \*])[^\/]+\.[0-9]{2}$/\1/p') || return $?
     test -n "${m_md5_hash}" || return $?
     m_md5_name=$(echo -n "${m_md5_line}" | tail -c +35) || return $?
     test -n "${m_md5_name}" || return $?
-    m_result=0
-    routine1 "$1" "${m_md5_line}" "${m_md5_name}" || m_result=$?
-    rm -f "${m_md5_name}" || true
-    return ${m_result}
+    routine1 "$1" "${m_md5_line}" "${m_md5_name}" || return $?
   done
 }
 
