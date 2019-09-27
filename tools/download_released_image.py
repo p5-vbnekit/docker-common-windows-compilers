@@ -2,16 +2,16 @@
 # -*- coding: utf-8 -*-
 
 """
-arguments: [yaml-style options string]
+arguments: [yaml-dict-style options]
 
-yaml-style options string:
+yaml-dict-style options string:
   name: string, image file name; None or False or empty string for default; default is "chocolatey.tar"
   repo: string; None or False or empty string for default; default is "p5-vbnekit/docker-common-windows-compilers"
   release: string; None or False or empty string for default; default is latest
   token: string; can be None or False
   output: string, None or False or empty string for default; default is stdout
   verbose: boolean, None or False for default; default is True
-  buffer_size: integer, None or False for default; default is 128 * 1024 * 1024
+  buffer_size: positive integer > 0, None or False for default; default is 128 * 1024 * 1024
 """
 
 import os, io, re, sys, yaml, time, ctypes, hashlib, github, traceback, urllib.request
@@ -21,15 +21,9 @@ if "__main__" == __name__: from __main__ import __file__ as main_path
 def routine():
   def make_options():
     class Result(object):
-      def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        m_arguments = sys.argv
-        m_arguments_length = len(m_arguments)
-        if 1 == m_arguments_length: m_dictionary = {}
-        else:
-          if 2 != m_arguments_length: raise ValueError("invalid command line: \"{} [yaml-style options string]\" expected".format(sys.argv[0]))
-          with io.StringIO(sys.argv[1]) as m_stream: m_dictionary = yaml.load(m_stream)
-        if not isinstance(m_dictionary, dict): raise TypeError("invalid options, dictionary expected")
+      def __init__(self, name = None, repo = None, release = None, token = None, output = None, verbose = None, buffer_size = None):
+        super().__init__()
+
         m_default_name = "chocolatey.tar"
         m_default_repo = "p5-vbnekit/docker-common-windows-compilers"
         m_default_release = None
@@ -37,44 +31,47 @@ def routine():
         m_default_output = None
         m_default_verbose = True
         m_default_buffer_size = 128 * 1024 * 1024
-        if "name" in m_dictionary:
-          self.__name = m_dictionary["name"]
-          if not self.__name: self.__name = m_default_name
-          elif not isinstance(self.__name, str): raise TypeError("invalid options, name: string expected")
-        else: self.__name = m_default_name
-        if "repo" in m_dictionary:
-          self.__repo = m_dictionary["repo"]
-          if not self.__repo: self.__repo = m_default_repo
-          elif not isinstance(self.__repo, str): raise TypeError("invalid options, repo: string expected")
-        else: self.__repo = m_default_repo
-        if "release" in m_dictionary:
-          self.__release = m_dictionary["release"]
-          if not self.__release: self.__release = m_default_release
-          elif not isinstance(self.__release, str): raise TypeError("invalid options, release: string expected")
-        else: self.__release = m_default_release
-        if "token" in m_dictionary:
-          self.__token = m_dictionary["token"]
-          if not self.__token: self.__token = m_default_token
-          elif not isinstance(self.__token, str): raise TypeError("invalid options, token: string expected")
-        else: self.__token = m_default_token
-        if "output" in m_dictionary:
-          self.__output = m_dictionary["output"]
-          if not self.__output: self.__output = m_default_output
-          elif not isinstance(self.__output, str): raise TypeError("invalid options, output: string expected")
-        else: self.__output = m_default_output
-        if "verbose" in m_dictionary:
-          self.__verbose = m_dictionary["verbose"]
-          if self.__verbose is None: self.__verbose = m_default_verbose
-          elif not isinstance(self.__verbose, bool): raise TypeError("invalid options, verbose: boolean expected")
-        else: self.__verbose = m_default_verbose
-        if "buffer_size" in m_dictionary:
-          self.__buffer_size = m_dictionary["buffer_size"]
-          if self.__buffer_size is None: self.__buffer_size = m_default_buffer_size
-          elif self.__buffer_size is False: self.__buffer_size = m_default_buffer_size
-          else:
-            if not isinstance(self.__buffer_size, int): raise TypeError("invalid options, buffer_size: positive integer expected")
-            if not (0 < self.__buffer_size): raise ValueError("invalid options, buffer_size: positive integer expected")
-        else: self.__buffer_size = m_default_buffer_size
+
+        self.__name = name
+        if self.__name is None: self.__name = m_default_name
+        elif self.__name is False: self.__name = m_default_name
+        elif not isinstance(self.__name, str): raise TypeError("invalid options, name: string expected")
+        elif not (0 < len(self.__name)): self.__name = m_default_name
+
+        self.__repo = repo
+        if self.__repo is None: self.__repo = m_default_repo
+        elif self.__repo is False: self.__repo = m_default_repo
+        elif not isinstance(self.__repo, str): raise TypeError("invalid options, repo: string expected")
+        elif not (0 < len(self.__repo)): self.__repo = m_default_repo
+
+        self.__release = release
+        if self.__release is None: pass
+        elif self.__release is False: self.__release = m_default_release
+        elif not isinstance(self.__release, str): raise TypeError("invalid options, release: string expected")
+        elif not (0 < len(self.__release)): self.__release = m_default_release
+
+        self.__token = token
+        if self.__token is None: pass
+        elif self.__token is False: self.__token = m_default_token
+        elif not isinstance(self.__token, str): raise TypeError("invalid options, token: string expected")
+        elif not (0 < len(self.__token)): self.__token = m_default_token
+
+        self.__output = output
+        if self.__output is None: pass
+        elif self.__output is False: self.__output = m_default_output
+        elif not isinstance(self.__output, str): raise TypeError("invalid options, output: string expected")
+        elif not (0 < len(self.__output)): self.__output = m_default_output
+
+        self.__verbose = verbose
+        if self.__verbose is None: self.__verbose = m_default_verbose
+        elif not isinstance(self.__verbose, bool): raise TypeError("invalid options, verbose: boolean expected")
+
+        self.__buffer_size = buffer_size
+        if self.__buffer_size is None: self.__buffer_size = m_default_buffer_size
+        elif self.__buffer_size is False: self.__buffer_size = m_default_buffer_size
+        elif not isinstance(self.__buffer_size, int): raise TypeError("invalid options, buffer_size: positive integer > 0 expected")
+        elif not (0 < self.__buffer_size): raise ValueError("invalid options, buffer_size: positive integer expected")
+
       name = property(lambda self: self.__name)
       repo = property(lambda self: self.__repo)
       release = property(lambda self: self.__release)
@@ -82,7 +79,22 @@ def routine():
       output = property(lambda self: self.__output)
       verbose = property(lambda self: self.__verbose)
       buffer_size = property(lambda self: self.__buffer_size)
-    return Result()
+
+    def make_dictionary(arguments):
+      m_result = {}
+      m_argument_id = 0
+      for m_argument in arguments:
+        m_argument_id += 1
+        m_argument = m_argument.strip("\r\n\t ")
+        if not (0 < len(m_argument)): continue
+        with io.StringIO(m_argument) as m_stream: m_loaded = yaml.load(m_stream)
+        if not isinstance(m_loaded, dict): raise TypeError("invalid argument #{}, yaml-dict-style expected".format(m_argument_id))
+        for m_key, m_value in m_loaded.items():
+          if m_key in m_result: raise ValueError("invalid argument #{}, key \"{}\" dupplicate detected".format(m_argument_id, m_key))
+          m_result[m_key] = m_value
+      return m_result
+
+    return Result(**make_dictionary(sys.argv[1:]))
 
   m_options = make_options()
 
