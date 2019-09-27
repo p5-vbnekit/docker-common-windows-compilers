@@ -65,8 +65,7 @@ jobs:
       "${m_python3_path}" "${m_tools_directory_path}/travis_wait_alternative.py" sh -e << EOF
       export PS4="executing command: "; set -x
       test -n "${m_git_tag}"
-      m_git_tag="20190926185524-698bd86"
-      "${m_python3_path}" "${m_tools_directory_path}/download_released_image.py" "name: chocolatey.tar" "release: \"${m_git_tag}\"" "token: \"`echo ${DOWNLOAD_TOKEN}`\"" | docker load
+      "${m_python3_path}" "${m_tools_directory_path}/download_released_image.py" "name: chocolatey.tar" "release: \"20190926185524-698bd86\"" "token: \"`echo ${DOWNLOAD_TOKEN}`\"" | docker load
       docker build --tag msys2 --file msys2.Dockerfile .
       docker system prune --force
       docker save msys2 | split --numeric-suffixes --bytes=2GB - /tmp/build/assets/msys2.tar.
@@ -82,8 +81,7 @@ jobs:
       "${m_python3_path}" "${m_tools_directory_path}/travis_wait_alternative.py" sh -e << EOF
       export PS4="executing command: "; set -x
       test -n "${m_git_tag}"
-      m_git_tag="20190926185524-698bd86"
-      "${m_python3_path}" "${m_tools_directory_path}/download_released_image.py" "name: chocolatey.tar" "release: \"${m_git_tag}\"" "token: \"`echo ${DOWNLOAD_TOKEN}`\"" | "${m_tools_directory_path}/xz.exe" -9 | split --numeric-suffixes --bytes=2GB - /tmp/build/assets/chocolatey.tar.xz.
+      "${m_python3_path}" "${m_tools_directory_path}/download_released_image.py" "name: chocolatey.tar" "release: \"20190926185524-698bd86\"" "token: \"`echo ${DOWNLOAD_TOKEN}`\"" | "${m_tools_directory_path}/xz.exe" -9 | split --numeric-suffixes --bytes=2GB - /tmp/build/assets/chocolatey.tar.xz.
       (cd /tmp/build/assets && md5sum chocolatey.tar.xz.* > chocolatey.tar.xz.md5.txt)
       EOF
   - name: msys2
@@ -94,7 +92,6 @@ jobs:
       "${m_python3_path}" "${m_tools_directory_path}/travis_wait_alternative.py" sh -e << EOF
       export PS4="executing command: "; set -x
       test -n "${m_git_tag}"
-      m_git_tag="20190926185524-698bd86"
-      "${m_python3_path}" "${m_tools_directory_path}/download_released_image.py" "name: msys2.tar" "release: \"${m_git_tag}\"" "token: \"`echo ${DOWNLOAD_TOKEN}`\"" | "${m_tools_directory_path}/xz.exe" -9 | split --numeric-suffixes --bytes=2GB - /tmp/build/assets/msys2.tar.xz.
+      "${m_python3_path}" "${m_tools_directory_path}/download_released_image.py" "name: msys2.tar" "release: \"20190926185524-698bd86\"" "token: \"`echo ${DOWNLOAD_TOKEN}`\"" | "${m_tools_directory_path}/xz.exe" -9 | split --numeric-suffixes --bytes=2GB - /tmp/build/assets/msys2.tar.xz.
       (cd /tmp/build/assets && md5sum msys2.tar.xz.* > msys2.tar.xz.md5.txt)
       EOF
