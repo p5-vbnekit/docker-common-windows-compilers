@@ -87,7 +87,7 @@ def routine():
         m_argument_id += 1
         m_argument = m_argument.strip("\r\n\t ")
         if not (0 < len(m_argument)): continue
-        with io.StringIO(m_argument) as m_stream: m_loaded = yaml.load(m_stream)
+        with io.StringIO(m_argument) as m_stream: m_loaded = yaml.safe_load(m_stream)
         if not isinstance(m_loaded, dict): raise TypeError("invalid argument #{}, yaml-dict-style expected".format(m_argument_id))
         for m_key, m_value in m_loaded.items():
           if m_key in m_result: raise ValueError("invalid argument #{}, key \"{}\" dupplicate detected".format(m_argument_id, m_key))
