@@ -53,6 +53,19 @@ def routine():
         self.__token = token
         if self.__token is None: pass
         elif self.__token is False: self.__token = m_default_token
+        elif isinstance(self.__token, dict):
+          def make_token():
+            m_items = self.__token.items()
+            if not 1 == len(m_items): ValueError("invalid options, token: \"env|file: NAME:STRING\" expected")
+            m_key, m_value = next(iter(m_items))
+            if not isinstance(m_key, str): raise ValueError("invalid options, token: \"env: NAME:STRING\" expected")
+            if not isinstance(m_value, str): raise ValueError("invalid options, token: \"env: NAME:STRING\" expected")
+            if not (0 < len(m_value)): raise ValueError("invalid options, token: \"env: NAME:STRING\" expected")
+            if "env" == m_key: return os.environ[m_value]
+            if "file" == m_key:
+              with open(m_value, "r") as m_stream: return m_stream.read()
+            raise ValueError("invalid options, token: \"env: NAME:STRING\" expected")
+          self.__token = make_token()
         elif not isinstance(self.__token, str): raise TypeError("invalid options, token: string expected")
         elif not (0 < len(self.__token)): self.__token = m_default_token
 
