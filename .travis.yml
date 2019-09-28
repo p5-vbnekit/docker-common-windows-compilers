@@ -1,109 +1,153 @@
-os: windows
-language: cpp
-services: docker
-
-branches:
-  only:
-  - master
+branches: { only: [ "master" ] }
 
 stages:
-- name: tar-1
-- name: tar-2
-- name: xz
-- name: publish
-
-before_install:
-- export m_tools_directory_path="$(pwd)/tools"
-- m_python3_directory_normal_path="/tmp/build/python3"
-- export m_python3_path="${m_python3_directory_normal_path}/python.exe"
-- mkdir -p "/tmp/build/output" "/tmp/build/assets" "${m_python3_directory_normal_path}"
-- m_python3_directory_ugly_path=$(cd "${m_python3_directory_normal_path}" && cmd.exe /c 'echo %cd%' | tail -n 1)
-- choco install python3 --confirm --params /InstallDir:"${m_python3_directory_ugly_path}"
-- '"${m_python3_path}" -m pip install --upgrade pip'
-- '"${m_python3_path}" -m pip install --upgrade PyGithub PyYAML'
-- export m_git_tag=`git tag --list --points-at HEAD | head -n 1`
-- if test -z "${m_git_tag}"; then export TRAVIS_TAG=${TRAVIS_TAG:-$(date +'%Y%m%d%H%M%S')-$(git log --format=%h -1)}; else export TRAVIS_TAG="${m_git_tag}"; fi
+- name: "prepare"
+- name: 1
+- name: 2
+- name: 3
+- name: "publish"
 
 before_deploy:
-- git config --local user.name "p5-vbnekit"
-- git config --local user.email "vbnekit@p5y.su"
-- if test -z "${m_git_tag}"; then git tag -a "${TRAVIS_TAG}" -m "${TRAVIS_TAG}"; fi
-- cd /tmp/build/assets
-- 'while true; do sleep 300; echo "this message had to be sent, otherwise travis-ci will stop the deployment of large files by 10min timeout..."; done & export m_deploy_ping_pid=$!'
+- "cd \"/tmp/build/assets\""
+- "while true; do sleep 300; echo \"this message had to be sent, otherwise travis-ci will stop the deployment of large files by 10min timeout...\"; done & export m_deploy_ping_pid=$!"
 
 deploy:
   file: "*"
   file_glob: true
   skip_cleanup: true
-  on: {branch: master}
-  provider: releases
+  on: {branch: "master"}
+  provider: "releases"
   draft: true
-  api_key:
-    secure: usn89BK6M+WmF1OjqCr+o+M7lTFhrPa8FLCfDoddwdT9ecbhQ7tEI4/CePyFIu5FUNdgFY++YeHv9MhzPdFo5UkfRP/RMWGtO6AKN5I+VOPZSf16xcXRhXiEgpA8Lr5l9Yf+KfSohVJNZj+iUGWqtS3hbKb/h57OP5jawMUYiS44/2++Xj6vY+Teq26+5njOY94nW7xfhreH1Xj0cObmPMlJPml8nj3A6M4HaJdUWuuv2c+osOzzX8dSOvaFDNdH7Am6QAo1GI4bQvyJmfpNf6peGPjv048bfPP/iU4otxSSIucpUHmp1TjXi6wtMeIxt7FFwFHe86lOVFzGQWat0DpZM7dad+vDTJVVhJH8vDN4hbY6FKQIOyEOUtiej4t/CCd4PaNrOGsDFl8jYY/I43Z/0aQqImQlfEtsgdc8Kozc+pku8xNGK23FNoMif9Mb1XnANz3tG+TpAuHOmoK5wuyjqDF8WBzL7ISt+QDeVRtgnlgEnvCpklaLsddgv41Gi76oJ5xU3cm3hKlEWiD6PtMWLFJnXMFISp6rrst0SdsoK/kGZbHX5PXxSg27yfIeWYAsSssZAJM7tXuhmGI5WOnY1mQKwH61lisYLY1uncOTrBiqX59FzpyYRvnh9KZuChAa163JRzKlYh5bmbxNPpoMm+Gliv461W7NaPQQwzM=
+  api_key: { secure: "usn89BK6M+WmF1OjqCr+o+M7lTFhrPa8FLCfDoddwdT9ecbhQ7tEI4/CePyFIu5FUNdgFY++YeHv9MhzPdFo5UkfRP/RMWGtO6AKN5I+VOPZSf16xcXRhXiEgpA8Lr5l9Yf+KfSohVJNZj+iUGWqtS3hbKb/h57OP5jawMUYiS44/2++Xj6vY+Teq26+5njOY94nW7xfhreH1Xj0cObmPMlJPml8nj3A6M4HaJdUWuuv2c+osOzzX8dSOvaFDNdH7Am6QAo1GI4bQvyJmfpNf6peGPjv048bfPP/iU4otxSSIucpUHmp1TjXi6wtMeIxt7FFwFHe86lOVFzGQWat0DpZM7dad+vDTJVVhJH8vDN4hbY6FKQIOyEOUtiej4t/CCd4PaNrOGsDFl8jYY/I43Z/0aQqImQlfEtsgdc8Kozc+pku8xNGK23FNoMif9Mb1XnANz3tG+TpAuHOmoK5wuyjqDF8WBzL7ISt+QDeVRtgnlgEnvCpklaLsddgv41Gi76oJ5xU3cm3hKlEWiD6PtMWLFJnXMFISp6rrst0SdsoK/kGZbHX5PXxSg27yfIeWYAsSssZAJM7tXuhmGI5WOnY1mQKwH61lisYLY1uncOTrBiqX59FzpyYRvnh9KZuChAa163JRzKlYh5bmbxNPpoMm+Gliv461W7NaPQQwzM=" }
 
-after_deploy: 'kill ${m_deploy_ping_pid}'
+after_deploy: "if test -n \"${m_deploy_ping_pid}\"; then kill \"${m_deploy_ping_pid}\" || true; fi"
 
 jobs:
   include:
-  - name: chocolatey
-    stage: tar-1
-    script: |
-      "${m_python3_path}" "${m_tools_directory_path}/travis_wait_alternative.py" sh -e << EOF
-      exit 0
-      export PS4="executing command: "; set -x
-      docker build --tag chocolatey --file chocolatey.Dockerfile .
-      docker system prune --force
-      docker save chocolatey | split --numeric-suffixes --bytes=2GB - /tmp/build/assets/chocolatey.tar.
-      docker rmi chocolatey
-      docker system prune --force
-      (cd /tmp/build/assets && md5sum chocolatey.tar.* > chocolatey.tar.md5.txt)
-      EOF
-  - name: msys2
-    stage: tar-2
-    env:
-      secure: "k2vIOY0DM4fjJdYJI2y+om4W5ypMsc/Nkr9LcBjWCKPRZlQTUEZbSqcbjsBTeawtKCgG1CQ2g3BIZSiWKQVeuZwbCl/UfC3WE5frarAJpLtsE9Zqv1yTQjBH7scE+Guj/vN4LUxhwlez5kQZLsyrTFRG9iWgD9ZJiBoaylzSqnjzzDvyRscmP+9r71KqSnaZyfQWO5sI6/6CUFGk4km57Q4LkYa2KHpoKclhIyIEhqFgryXv/QdbB/0nEHCpGLfdbjOcu06itXpFr6clpGf26JTWKXzu5JWZkNhzvPVvpi2IyUGeFrsy8gvLhfabxgMKiTwyIS8GX8VmXGXP7UHecQqKrPEml34XqBTOowjNijDaWLifiEwbygL5W9PZixhY7BOKHJnbud817dOwAL8ri4Q24vFDX7+y3Nwv3Qnztn+SkYWE99MkWPMLDP4fCLNb4ZhFxS9A1Ks71GV27/nqvW1DFV8l4gRxHB0LBLt8J6dtqtMB48+QTaYedUg0mqAa7P9VmTPGch7+kPwdDKI3IK+lIWn6tMtAfAAGBCiyZtNOavsJOT49FqPss4GOzJYbxnaFCVsYzNGrT7FRG2i9CTDoLlmaR8DEKmbCGiJHwuB3VluLnnT0Rk0t+k3k9kQ687R16fO5g8uCheGjd7367pDp8IjmoxWIkPVWLlHRE5k="
-    script: |
-      "${m_python3_path}" "${m_tools_directory_path}/travis_wait_alternative.py" sh -e << EOF
-      export PS4="executing command: "; set -x
-      # test -n "${m_git_tag}"
-      "${m_python3_path}" "${m_tools_directory_path}/download_released_image.py" "name: chocolatey.tar" "release: { draft: \"20190927151113-81c2a4e\"}" "token: {env: DOWNLOAD_TOKEN}" | docker load
-      docker build --tag msys2 --file msys2.Dockerfile .
-      docker system prune --force
-      docker save msys2 | split --numeric-suffixes --bytes=2GB - /tmp/build/assets/msys2.tar.
-      docker rmi msys2 chocolatey
-      docker system prune --force
-      (cd /tmp/build/assets && md5sum msys2.tar.* > msys2.tar.md5.txt)
-      EOF
-  - name: chocolatey
-    stage: xz
-    env:
-      secure: "k2vIOY0DM4fjJdYJI2y+om4W5ypMsc/Nkr9LcBjWCKPRZlQTUEZbSqcbjsBTeawtKCgG1CQ2g3BIZSiWKQVeuZwbCl/UfC3WE5frarAJpLtsE9Zqv1yTQjBH7scE+Guj/vN4LUxhwlez5kQZLsyrTFRG9iWgD9ZJiBoaylzSqnjzzDvyRscmP+9r71KqSnaZyfQWO5sI6/6CUFGk4km57Q4LkYa2KHpoKclhIyIEhqFgryXv/QdbB/0nEHCpGLfdbjOcu06itXpFr6clpGf26JTWKXzu5JWZkNhzvPVvpi2IyUGeFrsy8gvLhfabxgMKiTwyIS8GX8VmXGXP7UHecQqKrPEml34XqBTOowjNijDaWLifiEwbygL5W9PZixhY7BOKHJnbud817dOwAL8ri4Q24vFDX7+y3Nwv3Qnztn+SkYWE99MkWPMLDP4fCLNb4ZhFxS9A1Ks71GV27/nqvW1DFV8l4gRxHB0LBLt8J6dtqtMB48+QTaYedUg0mqAa7P9VmTPGch7+kPwdDKI3IK+lIWn6tMtAfAAGBCiyZtNOavsJOT49FqPss4GOzJYbxnaFCVsYzNGrT7FRG2i9CTDoLlmaR8DEKmbCGiJHwuB3VluLnnT0Rk0t+k3k9kQ687R16fO5g8uCheGjd7367pDp8IjmoxWIkPVWLlHRE5k="
-    script: |
-      "${m_python3_path}" "${m_tools_directory_path}/travis_wait_alternative.py" sh -e << EOF
-      export PS4="executing command: "; set -x
-      # test -n "${m_git_tag}"
-      "${m_python3_path}" "${m_tools_directory_path}/download_released_image.py" "name: chocolatey.tar" "release: { draft: \"20190927151113-81c2a4e\"}" "token: {env: DOWNLOAD_TOKEN}"" | "${m_tools_directory_path}/xz.exe" -9 | split --numeric-suffixes --bytes=2GB - /tmp/build/assets/chocolatey.tar.xz.
-      (cd /tmp/build/assets && md5sum chocolatey.tar.xz.* > chocolatey.tar.xz.md5.txt)
-      EOF
-  - name: msys2
-    stage: xz
-    env:
-      secure: "k2vIOY0DM4fjJdYJI2y+om4W5ypMsc/Nkr9LcBjWCKPRZlQTUEZbSqcbjsBTeawtKCgG1CQ2g3BIZSiWKQVeuZwbCl/UfC3WE5frarAJpLtsE9Zqv1yTQjBH7scE+Guj/vN4LUxhwlez5kQZLsyrTFRG9iWgD9ZJiBoaylzSqnjzzDvyRscmP+9r71KqSnaZyfQWO5sI6/6CUFGk4km57Q4LkYa2KHpoKclhIyIEhqFgryXv/QdbB/0nEHCpGLfdbjOcu06itXpFr6clpGf26JTWKXzu5JWZkNhzvPVvpi2IyUGeFrsy8gvLhfabxgMKiTwyIS8GX8VmXGXP7UHecQqKrPEml34XqBTOowjNijDaWLifiEwbygL5W9PZixhY7BOKHJnbud817dOwAL8ri4Q24vFDX7+y3Nwv3Qnztn+SkYWE99MkWPMLDP4fCLNb4ZhFxS9A1Ks71GV27/nqvW1DFV8l4gRxHB0LBLt8J6dtqtMB48+QTaYedUg0mqAa7P9VmTPGch7+kPwdDKI3IK+lIWn6tMtAfAAGBCiyZtNOavsJOT49FqPss4GOzJYbxnaFCVsYzNGrT7FRG2i9CTDoLlmaR8DEKmbCGiJHwuB3VluLnnT0Rk0t+k3k9kQ687R16fO5g8uCheGjd7367pDp8IjmoxWIkPVWLlHRE5k="
-    script: |
-      "${m_python3_path}" "${m_tools_directory_path}/travis_wait_alternative.py" sh -e << EOF
-      export PS4="executing command: "; set -x
-      # test -n "${m_git_tag}"
-      "${m_python3_path}" "${m_tools_directory_path}/download_released_image.py" "name: msys2.tar" "release: { draft: \"20190927151113-81c2a4e\"}" "token: {env: DOWNLOAD_TOKEN}"" | "${m_tools_directory_path}/xz.exe" -9 | split --numeric-suffixes --bytes=2GB - /tmp/build/assets/msys2.tar.xz.
-      (cd /tmp/build/assets && md5sum msys2.tar.xz.* > msys2.tar.xz.md5.txt)
-      EOF
-  - name: publish
-    stage: publish
+  - name: "prepare"
+    statge: "prepare"
+    os: "linux"
+    language: "minimal"
+    script: "true"
+    before_deploy:
+    - "export TRAVIS_TAG=\"${TRAVIS_TAG:-$(date +'%Y%m%d%H%M%S')-$(git log --format=%h -1)\""
     deploy:
-    file:
-    file_glob: false
-    skip_cleanup: false
-    on: {branch: master}
-    provider: releases
-    draft: false
-    api_key:
-      secure: usn89BK6M+WmF1OjqCr+o+M7lTFhrPa8FLCfDoddwdT9ecbhQ7tEI4/CePyFIu5FUNdgFY++YeHv9MhzPdFo5UkfRP/RMWGtO6AKN5I+VOPZSf16xcXRhXiEgpA8Lr5l9Yf+KfSohVJNZj+iUGWqtS3hbKb/h57OP5jawMUYiS44/2++Xj6vY+Teq26+5njOY94nW7xfhreH1Xj0cObmPMlJPml8nj3A6M4HaJdUWuuv2c+osOzzX8dSOvaFDNdH7Am6QAo1GI4bQvyJmfpNf6peGPjv048bfPP/iU4otxSSIucpUHmp1TjXi6wtMeIxt7FFwFHe86lOVFzGQWat0DpZM7dad+vDTJVVhJH8vDN4hbY6FKQIOyEOUtiej4t/CCd4PaNrOGsDFl8jYY/I43Z/0aQqImQlfEtsgdc8Kozc+pku8xNGK23FNoMif9Mb1XnANz3tG+TpAuHOmoK5wuyjqDF8WBzL7ISt+QDeVRtgnlgEnvCpklaLsddgv41Gi76oJ5xU3cm3hKlEWiD6PtMWLFJnXMFISp6rrst0SdsoK/kGZbHX5PXxSg27yfIeWYAsSssZAJM7tXuhmGI5WOnY1mQKwH61lisYLY1uncOTrBiqX59FzpyYRvnh9KZuChAa163JRzKlYh5bmbxNPpoMm+Gliv461W7NaPQQwzM=
+      file:
+      file_glob: false
+      skip_cleanup: false
+      on: { branch: "master" }
+      provider: "releases"
+      draft: true
+      api_key: { secure: "usn89BK6M+WmF1OjqCr+o+M7lTFhrPa8FLCfDoddwdT9ecbhQ7tEI4/CePyFIu5FUNdgFY++YeHv9MhzPdFo5UkfRP/RMWGtO6AKN5I+VOPZSf16xcXRhXiEgpA8Lr5l9Yf+KfSohVJNZj+iUGWqtS3hbKb/h57OP5jawMUYiS44/2++Xj6vY+Teq26+5njOY94nW7xfhreH1Xj0cObmPMlJPml8nj3A6M4HaJdUWuuv2c+osOzzX8dSOvaFDNdH7Am6QAo1GI4bQvyJmfpNf6peGPjv048bfPP/iU4otxSSIucpUHmp1TjXi6wtMeIxt7FFwFHe86lOVFzGQWat0DpZM7dad+vDTJVVhJH8vDN4hbY6FKQIOyEOUtiej4t/CCd4PaNrOGsDFl8jYY/I43Z/0aQqImQlfEtsgdc8Kozc+pku8xNGK23FNoMif9Mb1XnANz3tG+TpAuHOmoK5wuyjqDF8WBzL7ISt+QDeVRtgnlgEnvCpklaLsddgv41Gi76oJ5xU3cm3hKlEWiD6PtMWLFJnXMFISp6rrst0SdsoK/kGZbHX5PXxSg27yfIeWYAsSssZAJM7tXuhmGI5WOnY1mQKwH61lisYLY1uncOTrBiqX59FzpyYRvnh9KZuChAa163JRzKlYh5bmbxNPpoMm+Gliv461W7NaPQQwzM=" }
+    after_deploy: "true"
+
+  - name: "chocolatey.tar"
+    stage: 1
+    os: "windows"
+    language: "cpp"
+    services: "docker"
+    before_install:
+    - "test -n \"${TRAVIS_TAG}\""
+    - "m_python3_directory_path=\"/tmp/build/python3\""
+    - "export m_python3_executable_path=\"${m_python3_directory_path}/python.exe\""
+    install:
+    - "mkdir -p \"/tmp/build/output\" \"/tmp/build/assets\" \"${m_python3_directory_path}\""
+    - "choco install \"python3\" --confirm --params \"/InstallDir:$(cd '${m_python3_directory_path}' && cmd.exe /c 'echo %cd%' | tail -n 1)\""
+    before_script:
+    - "export m_tools_directory_path=\"${TRAVIS_BUILD_DIR}/tools\""
+    script: |
+      "${m_python3_executable_path}" "${m_tools_directory_path}/travis_wait_alternative.py" sh -e << EOF
+      export PS4="executing command: "; set -x
+      docker build --tag "chocolatey" --file "${TRAVIS_BUILD_DIR}/chocolatey.Dockerfile" .
+      docker system prune --force
+      docker save "chocolatey" | split --numeric-suffixes --bytes=2GB - "/tmp/build/assets/chocolatey.tar."
+      docker rmi "chocolatey"
+      docker system prune --force
+      (cd "/tmp/build/assets" && md5sum chocolatey.tar.* > "chocolatey.tar.md5.txt")
+      EOF
+
+  - name: "chocolatey.tar.xz"
+    stage: 2
+    env: { secure: "k2vIOY0DM4fjJdYJI2y+om4W5ypMsc/Nkr9LcBjWCKPRZlQTUEZbSqcbjsBTeawtKCgG1CQ2g3BIZSiWKQVeuZwbCl/UfC3WE5frarAJpLtsE9Zqv1yTQjBH7scE+Guj/vN4LUxhwlez5kQZLsyrTFRG9iWgD9ZJiBoaylzSqnjzzDvyRscmP+9r71KqSnaZyfQWO5sI6/6CUFGk4km57Q4LkYa2KHpoKclhIyIEhqFgryXv/QdbB/0nEHCpGLfdbjOcu06itXpFr6clpGf26JTWKXzu5JWZkNhzvPVvpi2IyUGeFrsy8gvLhfabxgMKiTwyIS8GX8VmXGXP7UHecQqKrPEml34XqBTOowjNijDaWLifiEwbygL5W9PZixhY7BOKHJnbud817dOwAL8ri4Q24vFDX7+y3Nwv3Qnztn+SkYWE99MkWPMLDP4fCLNb4ZhFxS9A1Ks71GV27/nqvW1DFV8l4gRxHB0LBLt8J6dtqtMB48+QTaYedUg0mqAa7P9VmTPGch7+kPwdDKI3IK+lIWn6tMtAfAAGBCiyZtNOavsJOT49FqPss4GOzJYbxnaFCVsYzNGrT7FRG2i9CTDoLlmaR8DEKmbCGiJHwuB3VluLnnT0Rk0t+k3k9kQ687R16fO5g8uCheGjd7367pDp8IjmoxWIkPVWLlHRE5k=" }
+    os: "linux"
+    language: "minimal"
+    before_install:
+    - "test -n \"${TRAVIS_TAG}\""
+    - "export m_python3_executable_path=\"$(/usr/bin/env python3)\""
+    - "mkdir -p \"/tmp/build/output\" \"/tmp/build/assets\""
+    install:
+    - "\"${m_python3_executable_path}\" -m \"pip\" install --upgrade \"pip\""
+    - "\"${m_python3_executable_path}\" -m \"pip\" install --upgrade \"PyGithub\" \"PyYAML\""
+    before_script:
+    - "export m_tools_directory_path=\"${TRAVIS_BUILD_DIR}/tools\""
+    script: |
+      "${m_python3_executable_path}" "${m_tools_directory_path}/travis_wait_alternative.py" sh -e << EOF
+      export PS4="executing command: "; set -x
+      "${m_python3_executable_path}" "${m_tools_directory_path}/download_released_image.py" "name: \"chocolatey.tar\"" "release: { draft: \"${TRAVIS_TAG}\"}" "token: {env: \"DOWNLOAD_TOKEN\"}" | xz -9 | split --numeric-suffixes --bytes=2GB - "/tmp/build/assets/chocolatey.tar.xz."
+      (cd "/tmp/build/assets" && md5sum chocolatey.tar.xz.* > "chocolatey.tar.xz.md5.txt")
+      EOF
+
+  - name: "msys2.tar"
+    stage: 2
+    os: "windows"
+    language: "cpp"
+    services: "docker"
+    before_install:
+    - "test -n \"${TRAVIS_TAG}\""
+    - "m_python3_directory_path=\"/tmp/build/python3\""
+    - "export m_python3_executable_path=\"${m_python3_directory_path}/python.exe\""
+    install:
+    - "mkdir -p \"/tmp/build/output\" \"/tmp/build/assets\" \"${m_python3_directory_path}\""
+    - "choco install \"python3\" --confirm --params \"/InstallDir:$(cd '${m_python3_directory_path}' && cmd.exe /c 'echo %cd%' | tail -n 1)\""
+    - "\"${m_python3_executable_path}\" -m \"pip\" install --upgrade \"pip\""
+    - "\"${m_python3_executable_path}\" -m \"pip\" install --upgrade \"PyGithub\" \"PyYAML\""
+    before_script:
+    - "export m_tools_directory_path=\"${TRAVIS_BUILD_DIR}/tools\""
+    script: |
+      "${m_python3_executable_path}" "${m_tools_directory_path}/travis_wait_alternative.py" sh -e << EOF
+      export PS4="executing command: "; set -x
+      "${m_python3_executable_path}" "${m_tools_directory_path}/download_released_image.py" "name: \"chocolatey.tar\"" "release: { draft: \"${TRAVIS_TAG}\"}" "token: {env: \"DOWNLOAD_TOKEN\"}" | | docker load
+      docker build --tag "msys2" --file "${TRAVIS_BUILD_DIR}/msys2.Dockerfile" .
+      docker system prune --force
+      docker save "msys2" | split --numeric-suffixes --bytes=2GB - "/tmp/build/assets/msys2.tar."
+      docker rmi "msys2" "chocolatey"
+      docker system prune --force
+      (cd "/tmp/build/assets" && md5sum msys2.tar.* > "msys2.tar.md5.txt")
+      EOF
+
+  - name: "msys2.tar.xz"
+    stage: 3
+    env: { secure: "k2vIOY0DM4fjJdYJI2y+om4W5ypMsc/Nkr9LcBjWCKPRZlQTUEZbSqcbjsBTeawtKCgG1CQ2g3BIZSiWKQVeuZwbCl/UfC3WE5frarAJpLtsE9Zqv1yTQjBH7scE+Guj/vN4LUxhwlez5kQZLsyrTFRG9iWgD9ZJiBoaylzSqnjzzDvyRscmP+9r71KqSnaZyfQWO5sI6/6CUFGk4km57Q4LkYa2KHpoKclhIyIEhqFgryXv/QdbB/0nEHCpGLfdbjOcu06itXpFr6clpGf26JTWKXzu5JWZkNhzvPVvpi2IyUGeFrsy8gvLhfabxgMKiTwyIS8GX8VmXGXP7UHecQqKrPEml34XqBTOowjNijDaWLifiEwbygL5W9PZixhY7BOKHJnbud817dOwAL8ri4Q24vFDX7+y3Nwv3Qnztn+SkYWE99MkWPMLDP4fCLNb4ZhFxS9A1Ks71GV27/nqvW1DFV8l4gRxHB0LBLt8J6dtqtMB48+QTaYedUg0mqAa7P9VmTPGch7+kPwdDKI3IK+lIWn6tMtAfAAGBCiyZtNOavsJOT49FqPss4GOzJYbxnaFCVsYzNGrT7FRG2i9CTDoLlmaR8DEKmbCGiJHwuB3VluLnnT0Rk0t+k3k9kQ687R16fO5g8uCheGjd7367pDp8IjmoxWIkPVWLlHRE5k=" }
+    os: "linux"
+    language: "minimal"
+    before_install:
+    - "test -n \"${TRAVIS_TAG}\""
+    - "export m_python3_executable_path=\"$(/usr/bin/env python3)\""
+    - "mkdir -p \"/tmp/build/output\" \"/tmp/build/assets\""
+    install:
+    - "\"${m_python3_executable_path}\" -m \"pip\" install --upgrade \"pip\""
+    - "\"${m_python3_executable_path}\" -m \"pip\" install --upgrade \"PyGithub\" \"PyYAML\""
+    before_script:
+    - "export m_tools_directory_path=\"${TRAVIS_BUILD_DIR}/tools\""
+    script: |
+      "${m_python3_executable_path}" "${m_tools_directory_path}/travis_wait_alternative.py" sh -e << EOF
+      export PS4="executing command: "; set -x
+      "${m_python3_executable_path}" "${m_tools_directory_path}/download_released_image.py" "name: \"msys2.tar\"" "release: { draft: \"${TRAVIS_TAG}\"}" "token: {env: \"DOWNLOAD_TOKEN\"}" | xz -9 | split --numeric-suffixes --bytes=2GB - "/tmp/build/assets/msys2.tar.xz."
+      (cd "/tmp/build/assets" && md5sum msys2.tar.xz.* > "msys2.tar.xz.md5.txt")
+      EOF
+
+  - name: "publish"
+    stage: "publish"
+    os: "linux"
+    language: "minimal"
+    script: "test -n \"${TRAVIS_TAG}\""
+    before_deploy: "true"
+    deploy:
+      file:
+      file_glob: false
+      skip_cleanup: false
+      on: { branch: "master" }
+      provider: "releases"
+      draft: false
+      api_key: { secure: "usn89BK6M+WmF1OjqCr+o+M7lTFhrPa8FLCfDoddwdT9ecbhQ7tEI4/CePyFIu5FUNdgFY++YeHv9MhzPdFo5UkfRP/RMWGtO6AKN5I+VOPZSf16xcXRhXiEgpA8Lr5l9Yf+KfSohVJNZj+iUGWqtS3hbKb/h57OP5jawMUYiS44/2++Xj6vY+Teq26+5njOY94nW7xfhreH1Xj0cObmPMlJPml8nj3A6M4HaJdUWuuv2c+osOzzX8dSOvaFDNdH7Am6QAo1GI4bQvyJmfpNf6peGPjv048bfPP/iU4otxSSIucpUHmp1TjXi6wtMeIxt7FFwFHe86lOVFzGQWat0DpZM7dad+vDTJVVhJH8vDN4hbY6FKQIOyEOUtiej4t/CCd4PaNrOGsDFl8jYY/I43Z/0aQqImQlfEtsgdc8Kozc+pku8xNGK23FNoMif9Mb1XnANz3tG+TpAuHOmoK5wuyjqDF8WBzL7ISt+QDeVRtgnlgEnvCpklaLsddgv41Gi76oJ5xU3cm3hKlEWiD6PtMWLFJnXMFISp6rrst0SdsoK/kGZbHX5PXxSg27yfIeWYAsSssZAJM7tXuhmGI5WOnY1mQKwH61lisYLY1uncOTrBiqX59FzpyYRvnh9KZuChAa163JRzKlYh5bmbxNPpoMm+Gliv461W7NaPQQwzM=" }
+    after_deploy: "true"
