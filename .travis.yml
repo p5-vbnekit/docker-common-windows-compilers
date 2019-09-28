@@ -1,6 +1,4 @@
-branches:
-  only:
-  - master
+branches: { only: [ "master" ] }
 
 stages:
 - name: "prepare"
