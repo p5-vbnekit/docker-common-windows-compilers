@@ -18,7 +18,7 @@ deploy:
   on: {branch: "master"}
   provider: "releases"
   draft: true
-  api_key: { secure: "usn89BK6M+WmF1OjqCr+o+M7lTFhrPa8FLCfDoddwdT9ecbhQ7tEI4/CePyFIu5FUNdgFY++YeHv9MhzPdFo5UkfRP/RMWGtO6AKN5I+VOPZSf16xcXRhXiEgpA8Lr5l9Yf+KfSohVJNZj+iUGWqtS3hbKb/h57OP5jawMUYiS44/2++Xj6vY+Teq26+5njOY94nW7xfhreH1Xj0cObmPMlJPml8nj3A6M4HaJdUWuuv2c+osOzzX8dSOvaFDNdH7Am6QAo1GI4bQvyJmfpNf6peGPjv048bfPP/iU4otxSSIucpUHmp1TjXi6wtMeIxt7FFwFHe86lOVFzGQWat0DpZM7dad+vDTJVVhJH8vDN4hbY6FKQIOyEOUtiej4t/CCd4PaNrOGsDFl8jYY/I43Z/0aQqImQlfEtsgdc8Kozc+pku8xNGK23FNoMif9Mb1XnANz3tG+TpAuHOmoK5wuyjqDF8WBzL7ISt+QDeVRtgnlgEnvCpklaLsddgv41Gi76oJ5xU3cm3hKlEWiD6PtMWLFJnXMFISp6rrst0SdsoK/kGZbHX5PXxSg27yfIeWYAsSssZAJM7tXuhmGI5WOnY1mQKwH61lisYLY1uncOTrBiqX59FzpyYRvnh9KZuChAa163JRzKlYh5bmbxNPpoMm+Gliv461W7NaPQQwzM=" }
+  api_key: { secure: "Ju101V+iAkFznYiyyDKpm7rgo5LvQ5+xk0vvvqujSv+/V+sA4fV3gM2w+NLDc1itI1RF2VEbLbcfP43KcugXk1HeQIlOKgrajZ74uistaRIOvfMWAp7RKw2QdMDGCP9D+5ZSwfzP+NfafG/p1W2uBWm7CqFBiJTX+z43Zf5R0CrxLIgIqr0K6qlGacPCpXDQdIFHvWhKrF6nKCS5HzuSLB5C3VPU83m70PT1/Cpj73S3J8Cp54ARRFTsLAx43xDRxMDFjFDE/vnM1DgVb2oqOaJSKV+O5DC/diL9Dkgu82uzqeHymUzU+XA0M51Ez6VDO4pvURYkBZ170t0yxdC+kDox+az47TLvZu7Zyqu1AbothxMmOpPD0l7RTVNvnLKd/kcyZK+psuqs6rNbnUxs2kR5M0/LUM0hf2THW9ZnX8wFz+JLv17L4TBC+pKIFpx/f9a6EXFw7IRCSLOJ+sJGf7pWHTHYUTJ1vn8RwHz80u2s8NwC53w/sTBGMuVFyUofqKRyJ3b6hTjY4QIiHgYqjVHSck8FViQoXfQOxbbJIYj+O80WiALf9Olty7GJ1qXvOwp5fKxtUr+m8i5QWcN9nasXas+altHNSoXnRWOhPPEZvpUhwrjlTArFojwsgjHwyubegCc07o6X4QbQAlX2+MfCSWY+Q9q+fagOQm361rI=" }
 
 after_deploy: "if test -n \"${m_deploy_ping_pid}\"; then kill \"${m_deploy_ping_pid}\" || true; fi"
 
@@ -38,7 +38,7 @@ jobs:
       on: { branch: "master" }
       provider: "releases"
       draft: true
-      api_key: { secure: "usn89BK6M+WmF1OjqCr+o+M7lTFhrPa8FLCfDoddwdT9ecbhQ7tEI4/CePyFIu5FUNdgFY++YeHv9MhzPdFo5UkfRP/RMWGtO6AKN5I+VOPZSf16xcXRhXiEgpA8Lr5l9Yf+KfSohVJNZj+iUGWqtS3hbKb/h57OP5jawMUYiS44/2++Xj6vY+Teq26+5njOY94nW7xfhreH1Xj0cObmPMlJPml8nj3A6M4HaJdUWuuv2c+osOzzX8dSOvaFDNdH7Am6QAo1GI4bQvyJmfpNf6peGPjv048bfPP/iU4otxSSIucpUHmp1TjXi6wtMeIxt7FFwFHe86lOVFzGQWat0DpZM7dad+vDTJVVhJH8vDN4hbY6FKQIOyEOUtiej4t/CCd4PaNrOGsDFl8jYY/I43Z/0aQqImQlfEtsgdc8Kozc+pku8xNGK23FNoMif9Mb1XnANz3tG+TpAuHOmoK5wuyjqDF8WBzL7ISt+QDeVRtgnlgEnvCpklaLsddgv41Gi76oJ5xU3cm3hKlEWiD6PtMWLFJnXMFISp6rrst0SdsoK/kGZbHX5PXxSg27yfIeWYAsSssZAJM7tXuhmGI5WOnY1mQKwH61lisYLY1uncOTrBiqX59FzpyYRvnh9KZuChAa163JRzKlYh5bmbxNPpoMm+Gliv461W7NaPQQwzM=" }
+      api_key: { secure: "Ju101V+iAkFznYiyyDKpm7rgo5LvQ5+xk0vvvqujSv+/V+sA4fV3gM2w+NLDc1itI1RF2VEbLbcfP43KcugXk1HeQIlOKgrajZ74uistaRIOvfMWAp7RKw2QdMDGCP9D+5ZSwfzP+NfafG/p1W2uBWm7CqFBiJTX+z43Zf5R0CrxLIgIqr0K6qlGacPCpXDQdIFHvWhKrF6nKCS5HzuSLB5C3VPU83m70PT1/Cpj73S3J8Cp54ARRFTsLAx43xDRxMDFjFDE/vnM1DgVb2oqOaJSKV+O5DC/diL9Dkgu82uzqeHymUzU+XA0M51Ez6VDO4pvURYkBZ170t0yxdC+kDox+az47TLvZu7Zyqu1AbothxMmOpPD0l7RTVNvnLKd/kcyZK+psuqs6rNbnUxs2kR5M0/LUM0hf2THW9ZnX8wFz+JLv17L4TBC+pKIFpx/f9a6EXFw7IRCSLOJ+sJGf7pWHTHYUTJ1vn8RwHz80u2s8NwC53w/sTBGMuVFyUofqKRyJ3b6hTjY4QIiHgYqjVHSck8FViQoXfQOxbbJIYj+O80WiALf9Olty7GJ1qXvOwp5fKxtUr+m8i5QWcN9nasXas+altHNSoXnRWOhPPEZvpUhwrjlTArFojwsgjHwyubegCc07o6X4QbQAlX2+MfCSWY+Q9q+fagOQm361rI=" }
     after_deploy: "true"
 
   - name: "chocolatey.tar"
@@ -70,7 +70,7 @@ jobs:
 
   - name: "chocolatey.tar.xz"
     stage: "stage-2"
-    env: { secure: "k2vIOY0DM4fjJdYJI2y+om4W5ypMsc/Nkr9LcBjWCKPRZlQTUEZbSqcbjsBTeawtKCgG1CQ2g3BIZSiWKQVeuZwbCl/UfC3WE5frarAJpLtsE9Zqv1yTQjBH7scE+Guj/vN4LUxhwlez5kQZLsyrTFRG9iWgD9ZJiBoaylzSqnjzzDvyRscmP+9r71KqSnaZyfQWO5sI6/6CUFGk4km57Q4LkYa2KHpoKclhIyIEhqFgryXv/QdbB/0nEHCpGLfdbjOcu06itXpFr6clpGf26JTWKXzu5JWZkNhzvPVvpi2IyUGeFrsy8gvLhfabxgMKiTwyIS8GX8VmXGXP7UHecQqKrPEml34XqBTOowjNijDaWLifiEwbygL5W9PZixhY7BOKHJnbud817dOwAL8ri4Q24vFDX7+y3Nwv3Qnztn+SkYWE99MkWPMLDP4fCLNb4ZhFxS9A1Ks71GV27/nqvW1DFV8l4gRxHB0LBLt8J6dtqtMB48+QTaYedUg0mqAa7P9VmTPGch7+kPwdDKI3IK+lIWn6tMtAfAAGBCiyZtNOavsJOT49FqPss4GOzJYbxnaFCVsYzNGrT7FRG2i9CTDoLlmaR8DEKmbCGiJHwuB3VluLnnT0Rk0t+k3k9kQ687R16fO5g8uCheGjd7367pDp8IjmoxWIkPVWLlHRE5k=" }
+    env: { secure: "WjfnxHX3BTNCVzmE/hAILv8NwVT0MbuUDG8FhvVY7VscDMd3ow4+ZtCaDT5a4Sba/o1WGpp7Q3kSh4+fnSHVpZGIe/k4JZ2nOhLukWdNLl8FKAku+9rriVZDe11o1tANhUDMDF3ala+aJ7ETO4Ocg2rc9BKQBTcF58rpf1m/Hx8sy3aVBwcvHJwNvu/I1Nir7eDpUT8yrTH14e4r+K+HvfjlmAB6pc/FuufdfOzu9uXwj9d7O2Ay9xuI1p6KwNPDhddaH4oWuPLFLjw9U2YX34sf5r3OYhE43YNAzyN+lNp2QhTJVvgG8JkURW9zp/gU76MI+cI/iOjaj6uRzD0q/F8kBHM2tWGTOdOYxolRhbMcdAkZ7iTBUEPKFW6jmenWf102xp4WKQNsDhXnzooAMLSrkKHmDpHCEL3pPFzbLkFl46Oio5Ze/+qbbQvq3Zk9dv7HeNd+0441Q5PCZqD6Z4RjrwVK7aC0l4lwgOjCHBJrK+EDk2Ab/2Vsja7pyQcLBOMQ+Gdvct0uDAE/94H1ETpurgDQ08397iufREpj9c+35u/BP6XygnjvBnYXf8GBAs7MVCo0O6uZuARtj6geVn7SiIhbkF8Tv2bycv1meB59b0L66Gc7xHRAdyQrVbcuAxKHz75Qfi5lPb4BTBqBymrfsSEcwlbx5J8ncqS44GU=" }
     os: "linux"
     language: "minimal"
     before_install:
@@ -92,6 +92,7 @@ jobs:
 
   - name: "msys2.tar"
     stage: "stage-2"
+    env: { secure: "WjfnxHX3BTNCVzmE/hAILv8NwVT0MbuUDG8FhvVY7VscDMd3ow4+ZtCaDT5a4Sba/o1WGpp7Q3kSh4+fnSHVpZGIe/k4JZ2nOhLukWdNLl8FKAku+9rriVZDe11o1tANhUDMDF3ala+aJ7ETO4Ocg2rc9BKQBTcF58rpf1m/Hx8sy3aVBwcvHJwNvu/I1Nir7eDpUT8yrTH14e4r+K+HvfjlmAB6pc/FuufdfOzu9uXwj9d7O2Ay9xuI1p6KwNPDhddaH4oWuPLFLjw9U2YX34sf5r3OYhE43YNAzyN+lNp2QhTJVvgG8JkURW9zp/gU76MI+cI/iOjaj6uRzD0q/F8kBHM2tWGTOdOYxolRhbMcdAkZ7iTBUEPKFW6jmenWf102xp4WKQNsDhXnzooAMLSrkKHmDpHCEL3pPFzbLkFl46Oio5Ze/+qbbQvq3Zk9dv7HeNd+0441Q5PCZqD6Z4RjrwVK7aC0l4lwgOjCHBJrK+EDk2Ab/2Vsja7pyQcLBOMQ+Gdvct0uDAE/94H1ETpurgDQ08397iufREpj9c+35u/BP6XygnjvBnYXf8GBAs7MVCo0O6uZuARtj6geVn7SiIhbkF8Tv2bycv1meB59b0L66Gc7xHRAdyQrVbcuAxKHz75Qfi5lPb4BTBqBymrfsSEcwlbx5J8ncqS44GU=" }
     os: "windows"
     language: "cpp"
     services: "docker"
@@ -122,7 +123,7 @@ jobs:
 
   - name: "msys2.tar.xz"
     stage: "stage-3"
-    env: { secure: "k2vIOY0DM4fjJdYJI2y+om4W5ypMsc/Nkr9LcBjWCKPRZlQTUEZbSqcbjsBTeawtKCgG1CQ2g3BIZSiWKQVeuZwbCl/UfC3WE5frarAJpLtsE9Zqv1yTQjBH7scE+Guj/vN4LUxhwlez5kQZLsyrTFRG9iWgD9ZJiBoaylzSqnjzzDvyRscmP+9r71KqSnaZyfQWO5sI6/6CUFGk4km57Q4LkYa2KHpoKclhIyIEhqFgryXv/QdbB/0nEHCpGLfdbjOcu06itXpFr6clpGf26JTWKXzu5JWZkNhzvPVvpi2IyUGeFrsy8gvLhfabxgMKiTwyIS8GX8VmXGXP7UHecQqKrPEml34XqBTOowjNijDaWLifiEwbygL5W9PZixhY7BOKHJnbud817dOwAL8ri4Q24vFDX7+y3Nwv3Qnztn+SkYWE99MkWPMLDP4fCLNb4ZhFxS9A1Ks71GV27/nqvW1DFV8l4gRxHB0LBLt8J6dtqtMB48+QTaYedUg0mqAa7P9VmTPGch7+kPwdDKI3IK+lIWn6tMtAfAAGBCiyZtNOavsJOT49FqPss4GOzJYbxnaFCVsYzNGrT7FRG2i9CTDoLlmaR8DEKmbCGiJHwuB3VluLnnT0Rk0t+k3k9kQ687R16fO5g8uCheGjd7367pDp8IjmoxWIkPVWLlHRE5k=" }
+    env: { secure: "WjfnxHX3BTNCVzmE/hAILv8NwVT0MbuUDG8FhvVY7VscDMd3ow4+ZtCaDT5a4Sba/o1WGpp7Q3kSh4+fnSHVpZGIe/k4JZ2nOhLukWdNLl8FKAku+9rriVZDe11o1tANhUDMDF3ala+aJ7ETO4Ocg2rc9BKQBTcF58rpf1m/Hx8sy3aVBwcvHJwNvu/I1Nir7eDpUT8yrTH14e4r+K+HvfjlmAB6pc/FuufdfOzu9uXwj9d7O2Ay9xuI1p6KwNPDhddaH4oWuPLFLjw9U2YX34sf5r3OYhE43YNAzyN+lNp2QhTJVvgG8JkURW9zp/gU76MI+cI/iOjaj6uRzD0q/F8kBHM2tWGTOdOYxolRhbMcdAkZ7iTBUEPKFW6jmenWf102xp4WKQNsDhXnzooAMLSrkKHmDpHCEL3pPFzbLkFl46Oio5Ze/+qbbQvq3Zk9dv7HeNd+0441Q5PCZqD6Z4RjrwVK7aC0l4lwgOjCHBJrK+EDk2Ab/2Vsja7pyQcLBOMQ+Gdvct0uDAE/94H1ETpurgDQ08397iufREpj9c+35u/BP6XygnjvBnYXf8GBAs7MVCo0O6uZuARtj6geVn7SiIhbkF8Tv2bycv1meB59b0L66Gc7xHRAdyQrVbcuAxKHz75Qfi5lPb4BTBqBymrfsSEcwlbx5J8ncqS44GU=" }
     os: "linux"
     language: "minimal"
     before_install:
@@ -156,5 +157,5 @@ jobs:
       on: { branch: "master" }
       provider: "releases"
       draft: false
-      api_key: { secure: "usn89BK6M+WmF1OjqCr+o+M7lTFhrPa8FLCfDoddwdT9ecbhQ7tEI4/CePyFIu5FUNdgFY++YeHv9MhzPdFo5UkfRP/RMWGtO6AKN5I+VOPZSf16xcXRhXiEgpA8Lr5l9Yf+KfSohVJNZj+iUGWqtS3hbKb/h57OP5jawMUYiS44/2++Xj6vY+Teq26+5njOY94nW7xfhreH1Xj0cObmPMlJPml8nj3A6M4HaJdUWuuv2c+osOzzX8dSOvaFDNdH7Am6QAo1GI4bQvyJmfpNf6peGPjv048bfPP/iU4otxSSIucpUHmp1TjXi6wtMeIxt7FFwFHe86lOVFzGQWat0DpZM7dad+vDTJVVhJH8vDN4hbY6FKQIOyEOUtiej4t/CCd4PaNrOGsDFl8jYY/I43Z/0aQqImQlfEtsgdc8Kozc+pku8xNGK23FNoMif9Mb1XnANz3tG+TpAuHOmoK5wuyjqDF8WBzL7ISt+QDeVRtgnlgEnvCpklaLsddgv41Gi76oJ5xU3cm3hKlEWiD6PtMWLFJnXMFISp6rrst0SdsoK/kGZbHX5PXxSg27yfIeWYAsSssZAJM7tXuhmGI5WOnY1mQKwH61lisYLY1uncOTrBiqX59FzpyYRvnh9KZuChAa163JRzKlYh5bmbxNPpoMm+Gliv461W7NaPQQwzM=" }
+      api_key: { secure: "Ju101V+iAkFznYiyyDKpm7rgo5LvQ5+xk0vvvqujSv+/V+sA4fV3gM2w+NLDc1itI1RF2VEbLbcfP43KcugXk1HeQIlOKgrajZ74uistaRIOvfMWAp7RKw2QdMDGCP9D+5ZSwfzP+NfafG/p1W2uBWm7CqFBiJTX+z43Zf5R0CrxLIgIqr0K6qlGacPCpXDQdIFHvWhKrF6nKCS5HzuSLB5C3VPU83m70PT1/Cpj73S3J8Cp54ARRFTsLAx43xDRxMDFjFDE/vnM1DgVb2oqOaJSKV+O5DC/diL9Dkgu82uzqeHymUzU+XA0M51Ez6VDO4pvURYkBZ170t0yxdC+kDox+az47TLvZu7Zyqu1AbothxMmOpPD0l7RTVNvnLKd/kcyZK+psuqs6rNbnUxs2kR5M0/LUM0hf2THW9ZnX8wFz+JLv17L4TBC+pKIFpx/f9a6EXFw7IRCSLOJ+sJGf7pWHTHYUTJ1vn8RwHz80u2s8NwC53w/sTBGMuVFyUofqKRyJ3b6hTjY4QIiHgYqjVHSck8FViQoXfQOxbbJIYj+O80WiALf9Olty7GJ1qXvOwp5fKxtUr+m8i5QWcN9nasXas+altHNSoXnRWOhPPEZvpUhwrjlTArFojwsgjHwyubegCc07o6X4QbQAlX2+MfCSWY+Q9q+fagOQm361rI=" }
     after_deploy: "true"
