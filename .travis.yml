@@ -48,7 +48,7 @@ jobs:
     - "mkdir -p \"/tmp/build/output\" \"/tmp/build/assets\""
     - "export m_python3_executable_path=\"${m_python3_directory_path}/python.exe\""
     script: |
-      "${m_python3_executable_path}" "${m_tools_directory_path}/travis_wait_alternative.py" sh -e << EOF
+      "${m_python3_executable_path}" "${m_tools_directory_path}/travis_wait_alternative.py" bash -e << EOF
       export PS4="executing command: "; set -xo pipefail
       exit 0
       docker build --tag "chocolatey" --file "${TRAVIS_BUILD_DIR}/chocolatey.Dockerfile" .
@@ -80,7 +80,7 @@ jobs:
     - "export TRAVIS_TAG=\"travis-86c98e6ce9fa2817bdce36e33a3e9e0598bbf940\""
     - "if test -z \"${TRAVIS_TAG}\"; then export TRAVIS_TAG=\"travis-${TRAVIS_COMMIT}\"; fi"
     script: |
-      "${m_python3_executable_path}" "${m_tools_directory_path}/travis_wait_alternative.py" sh -e << EOF
+      "${m_python3_executable_path}" "${m_tools_directory_path}/travis_wait_alternative.py" bash -e << EOF
       export PS4="executing command: "; set -xo pipefail
       "${m_python3_executable_path}" "${m_tools_directory_path}/download_released_image.py" "name: \"chocolatey.tar\"" "release: { draft: \"${TRAVIS_TAG}\"}" "token: {env: \"DOWNLOAD_TOKEN\"}" | xz -9 --threads=0 | split --numeric-suffixes --bytes=2GB - "/tmp/build/assets/chocolatey.tar.xz."
       (cd "/tmp/build/assets" && md5sum chocolatey.tar.xz.* > "chocolatey.tar.xz.md5.txt")
@@ -110,8 +110,8 @@ jobs:
     - "export TRAVIS_TAG=\"travis-86c98e6ce9fa2817bdce36e33a3e9e0598bbf940\""
     - "if test -z \"${TRAVIS_TAG}\"; then export TRAVIS_TAG=\"travis-${TRAVIS_COMMIT}\"; fi"
     script: |
-      "${m_python3_executable_path}" "${m_tools_directory_path}/travis_wait_alternative.py" sh -e << EOF
-      export PS4="executing command: "; set -x
+      "${m_python3_executable_path}" "${m_tools_directory_path}/travis_wait_alternative.py" bash -e << EOF
+      export PS4="executing command: "; set -xo pipefail
       "${m_python3_executable_path}" "${m_tools_directory_path}/download_released_image.py" "name: \"chocolatey.tar\"" "release: { draft: \"${TRAVIS_TAG}\"}" "token: {env: \"DOWNLOAD_TOKEN\"}" | docker load
       docker build --tag "msys2" --file "${TRAVIS_BUILD_DIR}/msys2.Dockerfile" .
       docker system prune --force
@@ -141,7 +141,7 @@ jobs:
     - "export TRAVIS_TAG=\"travis-86c98e6ce9fa2817bdce36e33a3e9e0598bbf940\""
     - "if test -z \"${TRAVIS_TAG}\"; then export TRAVIS_TAG=\"travis-${TRAVIS_COMMIT}\"; fi"
     script: |
-      "${m_python3_executable_path}" "${m_tools_directory_path}/travis_wait_alternative.py" sh -e << EOF
+      "${m_python3_executable_path}" "${m_tools_directory_path}/travis_wait_alternative.py" bash -e << EOF
       export PS4="executing command: "; set -xo pipefail
       "${m_python3_executable_path}" "${m_tools_directory_path}/download_released_image.py" "name: \"msys2.tar\"" "release: { draft: \"${TRAVIS_TAG}\"}" "token: {env: \"DOWNLOAD_TOKEN\"}" | xz -9 --threads=0 | split --numeric-suffixes --bytes=2GB - "/tmp/build/assets/msys2.tar.xz."
       (cd "/tmp/build/assets" && md5sum msys2.tar.xz.* > "msys2.tar.xz.md5.txt")
