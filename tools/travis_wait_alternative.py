@@ -15,10 +15,8 @@ if "__main__" == __name__:
       while m_condition:
         if m_event.wait(+3.0e+2): continue
         if not m_condition: break
-        print("", file = sys.stderr)
-        sys.stderr.write("{}: time elapsed: {}".format(m_main_path, time.monotonic() - m_begin))
+        print("{}: time elapsed: {}".format(m_main_path, time.monotonic() - m_begin), file = sys.stderr)
         sys.stderr.flush()
-    with m_event:
       print("{}: exiting".format(m_main_path), file = sys.stderr)
       sys.stderr.flush()
 

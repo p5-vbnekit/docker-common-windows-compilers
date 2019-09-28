@@ -1,3 +1,6 @@
+os: "linux"
+language: "minimal"
+
 branches: { only: [ "master" ] }
 
 stages:
@@ -26,8 +29,6 @@ jobs:
   include:
   - name: "prepare"
     stage: "prepare"
-    os: "linux"
-    language: "minimal"
     script: "true"
     # before_deploy: "export TRAVIS_TAG=\"${TRAVIS_TAG:-$(date +'%Y%m%d%H%M%S')-$(git log --format=%h -1)}\""
     before_deploy: "if test -z \"${TRAVIS_TAG}\"; then export TRAVIS_TAG=\"travis-${TRAVIS_COMMIT}\"; fi"
@@ -60,6 +61,7 @@ jobs:
     script: |
       "${m_python3_executable_path}" "${m_tools_directory_path}/travis_wait_alternative.py" sh -e << EOF
       export PS4="executing command: "; set -x
+      exit 0
       docker build --tag "chocolatey" --file "${TRAVIS_BUILD_DIR}/chocolatey.Dockerfile" .
       docker system prune --force
       docker save "chocolatey" | split --numeric-suffixes --bytes=2GB - "/tmp/build/assets/chocolatey.tar."
@@ -71,9 +73,10 @@ jobs:
   - name: "chocolatey.tar.xz"
     stage: "stage-2"
     env: { secure: "WjfnxHX3BTNCVzmE/hAILv8NwVT0MbuUDG8FhvVY7VscDMd3ow4+ZtCaDT5a4Sba/o1WGpp7Q3kSh4+fnSHVpZGIe/k4JZ2nOhLukWdNLl8FKAku+9rriVZDe11o1tANhUDMDF3ala+aJ7ETO4Ocg2rc9BKQBTcF58rpf1m/Hx8sy3aVBwcvHJwNvu/I1Nir7eDpUT8yrTH14e4r+K+HvfjlmAB6pc/FuufdfOzu9uXwj9d7O2Ay9xuI1p6KwNPDhddaH4oWuPLFLjw9U2YX34sf5r3OYhE43YNAzyN+lNp2QhTJVvgG8JkURW9zp/gU76MI+cI/iOjaj6uRzD0q/F8kBHM2tWGTOdOYxolRhbMcdAkZ7iTBUEPKFW6jmenWf102xp4WKQNsDhXnzooAMLSrkKHmDpHCEL3pPFzbLkFl46Oio5Ze/+qbbQvq3Zk9dv7HeNd+0441Q5PCZqD6Z4RjrwVK7aC0l4lwgOjCHBJrK+EDk2Ab/2Vsja7pyQcLBOMQ+Gdvct0uDAE/94H1ETpurgDQ08397iufREpj9c+35u/BP6XygnjvBnYXf8GBAs7MVCo0O6uZuARtj6geVn7SiIhbkF8Tv2bycv1meB59b0L66Gc7xHRAdyQrVbcuAxKHz75Qfi5lPb4BTBqBymrfsSEcwlbx5J8ncqS44GU=" }
-    os: "linux"
-    language: "minimal"
+    language: "python"
+    python: 3
     before_install:
+    - "export TRAVIS_TAG=\"travis-86c98e6ce9fa2817bdce36e33a3e9e0598bbf940\""
     - "test -n \"${TRAVIS_TAG}\" || true"
     - "if test -z \"${TRAVIS_TAG}\"; then export TRAVIS_TAG=\"travis-${TRAVIS_COMMIT}\"; fi"
     - "export m_python3_executable_path=\"$(which python3)\""
@@ -97,6 +100,7 @@ jobs:
     language: "cpp"
     services: "docker"
     before_install:
+    - "export TRAVIS_TAG=\"travis-86c98e6ce9fa2817bdce36e33a3e9e0598bbf940\""
     - "test -n \"${TRAVIS_TAG}\" || true"
     - "if test -z \"${TRAVIS_TAG}\"; then export TRAVIS_TAG=\"travis-${TRAVIS_COMMIT}\"; fi"
     - "m_python3_directory_path=\"/tmp/build/python3\""
@@ -124,9 +128,10 @@ jobs:
   - name: "msys2.tar.xz"
     stage: "stage-3"
     env: { secure: "WjfnxHX3BTNCVzmE/hAILv8NwVT0MbuUDG8FhvVY7VscDMd3ow4+ZtCaDT5a4Sba/o1WGpp7Q3kSh4+fnSHVpZGIe/k4JZ2nOhLukWdNLl8FKAku+9rriVZDe11o1tANhUDMDF3ala+aJ7ETO4Ocg2rc9BKQBTcF58rpf1m/Hx8sy3aVBwcvHJwNvu/I1Nir7eDpUT8yrTH14e4r+K+HvfjlmAB6pc/FuufdfOzu9uXwj9d7O2Ay9xuI1p6KwNPDhddaH4oWuPLFLjw9U2YX34sf5r3OYhE43YNAzyN+lNp2QhTJVvgG8JkURW9zp/gU76MI+cI/iOjaj6uRzD0q/F8kBHM2tWGTOdOYxolRhbMcdAkZ7iTBUEPKFW6jmenWf102xp4WKQNsDhXnzooAMLSrkKHmDpHCEL3pPFzbLkFl46Oio5Ze/+qbbQvq3Zk9dv7HeNd+0441Q5PCZqD6Z4RjrwVK7aC0l4lwgOjCHBJrK+EDk2Ab/2Vsja7pyQcLBOMQ+Gdvct0uDAE/94H1ETpurgDQ08397iufREpj9c+35u/BP6XygnjvBnYXf8GBAs7MVCo0O6uZuARtj6geVn7SiIhbkF8Tv2bycv1meB59b0L66Gc7xHRAdyQrVbcuAxKHz75Qfi5lPb4BTBqBymrfsSEcwlbx5J8ncqS44GU=" }
-    os: "linux"
-    language: "minimal"
+    language: "python"
+    python: 3
     before_install:
+    - "export TRAVIS_TAG=\"travis-86c98e6ce9fa2817bdce36e33a3e9e0598bbf940\""
     - "test -n \"${TRAVIS_TAG}\" || true"
     - "if test -z \"${TRAVIS_TAG}\"; then export TRAVIS_TAG=\"travis-${TRAVIS_COMMIT}\"; fi"
     - "export m_python3_executable_path=\"$(which python3)\""
@@ -145,11 +150,10 @@ jobs:
 
   - name: "publish"
     stage: "publish"
-    os: "linux"
-    language: "minimal"
     # script: "test -n \"${TRAVIS_TAG}\""
     script: "if test -z \"${TRAVIS_TAG}\"; then export TRAVIS_TAG=\"travis-${TRAVIS_COMMIT}\"; fi"
-    before_deploy: "true"
+    # before_deploy: "true"
+    before_deploy: "export TRAVIS_TAG=\"travis-86c98e6ce9fa2817bdce36e33a3e9e0598bbf940\""
     deploy:
       file:
       file_glob: false
