@@ -12,7 +12,7 @@ stages:
 
 before_deploy:
 - "cd \"/tmp/build/assets\""
-- "while true; do sleep 300; echo \"this message had to be sent, otherwise travis-ci will stop the deployment of large files by 10min timeout...\"; done & export m_deploy_ping_pid=$!"
+- "while true; do sleep 300; echo \"this message had to be sent, otherwise travis-ci will stop the deployment of large files by 10 minutes timeout...\"; done & export m_deploy_ping_pid=$!"
 
 deploy:
   file: "*"

@@ -15,7 +15,7 @@ if "__main__" == __name__:
       while m_condition:
         if m_event.wait(+3.0e+2): continue
         if not m_condition: break
-        print("{}: time elapsed: {}".format(m_main_path, time.monotonic() - m_begin), file = sys.stderr)
+        print("{}: this message had to be sent, otherwise travis-ci will stop the job by 10 minutes timeout, child process stderr is already silent for 5 minutes, total time elapsed: {} seconds...".format(m_main_path, time.monotonic() - m_begin), file = sys.stderr)
         sys.stderr.flush()
       print("{}: exiting".format(m_main_path), file = sys.stderr)
       sys.stderr.flush()
@@ -31,7 +31,7 @@ if "__main__" == __name__:
     def thread_routine():
       for m_line in m_process.stderr:
         with m_event:
-          sys.stderr.write(m_line.decode())
+          sys.stderr.buffer.write(m_line)
           sys.stderr.flush()
           m_event.notify_all()
 
