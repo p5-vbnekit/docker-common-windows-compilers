@@ -76,7 +76,7 @@ jobs:
     before_install:
     - "test -n \"${TRAVIS_TAG}\" || true"
     - "if test -z \"${TRAVIS_TAG}\"; then export TRAVIS_TAG=\"travis-${TRAVIS_COMMIT}\"; fi"
-    - "export m_python3_executable_path=\"$(/usr/bin/env python3)\""
+    - "export m_python3_executable_path=\"$(which python3)\""
     - "mkdir -p \"/tmp/build/output\" \"/tmp/build/assets\""
     install:
     - "\"${m_python3_executable_path}\" -m \"pip\" install --upgrade \"pip\""
@@ -111,7 +111,7 @@ jobs:
     script: |
       "${m_python3_executable_path}" "${m_tools_directory_path}/travis_wait_alternative.py" sh -e << EOF
       export PS4="executing command: "; set -x
-      "${m_python3_executable_path}" "${m_tools_directory_path}/download_released_image.py" "name: \"chocolatey.tar\"" "release: { draft: \"${TRAVIS_TAG}\"}" "token: {env: \"DOWNLOAD_TOKEN\"}" | | docker load
+      "${m_python3_executable_path}" "${m_tools_directory_path}/download_released_image.py" "name: \"chocolatey.tar\"" "release: { draft: \"${TRAVIS_TAG}\"}" "token: {env: \"DOWNLOAD_TOKEN\"}" | docker load
       docker build --tag "msys2" --file "${TRAVIS_BUILD_DIR}/msys2.Dockerfile" .
       docker system prune --force
       docker save "msys2" | split --numeric-suffixes --bytes=2GB - "/tmp/build/assets/msys2.tar."
@@ -128,7 +128,7 @@ jobs:
     before_install:
     - "test -n \"${TRAVIS_TAG}\" || true"
     - "if test -z \"${TRAVIS_TAG}\"; then export TRAVIS_TAG=\"travis-${TRAVIS_COMMIT}\"; fi"
-    - "export m_python3_executable_path=\"$(/usr/bin/env python3)\""
+    - "export m_python3_executable_path=\"$(which python3)\""
     - "mkdir -p \"/tmp/build/output\" \"/tmp/build/assets\""
     install:
     - "\"${m_python3_executable_path}\" -m \"pip\" install --upgrade \"pip\""
