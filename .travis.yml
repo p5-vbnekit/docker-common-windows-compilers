@@ -30,7 +30,7 @@ jobs:
     language: "minimal"
     script: "true"
     before_deploy:
-    - "export TRAVIS_TAG=\"${TRAVIS_TAG:-$(date +'%Y%m%d%H%M%S')-$(git log --format=%h -1)\""
+    - "export TRAVIS_TAG=\"${TRAVIS_TAG:-$(date +'%Y%m%d%H%M%S')-$(git log --format=%h -1)}\""
     deploy:
       file:
       file_glob: false
