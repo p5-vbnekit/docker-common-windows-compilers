@@ -1,16 +1,12 @@
-os: windows
-language: cpp
-services: docker
-
 branches:
   only:
   - master
 
 stages:
 - name: "prepare"
-- name: 1
-- name: 2
-- name: 3
+- name: "stage-1"
+- name: "stage-2"
+- name: "stage-3"
 - name: "publish"
 
 before_deploy:
@@ -48,7 +44,7 @@ jobs:
     after_deploy: "true"
 
   - name: "chocolatey.tar"
-    stage: 1
+    stage: "stage-1"
     os: "windows"
     language: "cpp"
     services: "docker"
@@ -73,7 +69,7 @@ jobs:
       EOF
 
   - name: "chocolatey.tar.xz"
-    stage: 2
+    stage: "stage-2"
     env: { secure: "k2vIOY0DM4fjJdYJI2y+om4W5ypMsc/Nkr9LcBjWCKPRZlQTUEZbSqcbjsBTeawtKCgG1CQ2g3BIZSiWKQVeuZwbCl/UfC3WE5frarAJpLtsE9Zqv1yTQjBH7scE+Guj/vN4LUxhwlez5kQZLsyrTFRG9iWgD9ZJiBoaylzSqnjzzDvyRscmP+9r71KqSnaZyfQWO5sI6/6CUFGk4km57Q4LkYa2KHpoKclhIyIEhqFgryXv/QdbB/0nEHCpGLfdbjOcu06itXpFr6clpGf26JTWKXzu5JWZkNhzvPVvpi2IyUGeFrsy8gvLhfabxgMKiTwyIS8GX8VmXGXP7UHecQqKrPEml34XqBTOowjNijDaWLifiEwbygL5W9PZixhY7BOKHJnbud817dOwAL8ri4Q24vFDX7+y3Nwv3Qnztn+SkYWE99MkWPMLDP4fCLNb4ZhFxS9A1Ks71GV27/nqvW1DFV8l4gRxHB0LBLt8J6dtqtMB48+QTaYedUg0mqAa7P9VmTPGch7+kPwdDKI3IK+lIWn6tMtAfAAGBCiyZtNOavsJOT49FqPss4GOzJYbxnaFCVsYzNGrT7FRG2i9CTDoLlmaR8DEKmbCGiJHwuB3VluLnnT0Rk0t+k3k9kQ687R16fO5g8uCheGjd7367pDp8IjmoxWIkPVWLlHRE5k=" }
     os: "linux"
     language: "minimal"
@@ -94,7 +90,7 @@ jobs:
       EOF
 
   - name: "msys2.tar"
-    stage: 2
+    stage: "stage-2"
     os: "windows"
     language: "cpp"
     services: "docker"
@@ -122,7 +118,7 @@ jobs:
       EOF
 
   - name: "msys2.tar.xz"
-    stage: 3
+    stage: "stage-3"
     env: { secure: "k2vIOY0DM4fjJdYJI2y+om4W5ypMsc/Nkr9LcBjWCKPRZlQTUEZbSqcbjsBTeawtKCgG1CQ2g3BIZSiWKQVeuZwbCl/UfC3WE5frarAJpLtsE9Zqv1yTQjBH7scE+Guj/vN4LUxhwlez5kQZLsyrTFRG9iWgD9ZJiBoaylzSqnjzzDvyRscmP+9r71KqSnaZyfQWO5sI6/6CUFGk4km57Q4LkYa2KHpoKclhIyIEhqFgryXv/QdbB/0nEHCpGLfdbjOcu06itXpFr6clpGf26JTWKXzu5JWZkNhzvPVvpi2IyUGeFrsy8gvLhfabxgMKiTwyIS8GX8VmXGXP7UHecQqKrPEml34XqBTOowjNijDaWLifiEwbygL5W9PZixhY7BOKHJnbud817dOwAL8ri4Q24vFDX7+y3Nwv3Qnztn+SkYWE99MkWPMLDP4fCLNb4ZhFxS9A1Ks71GV27/nqvW1DFV8l4gRxHB0LBLt8J6dtqtMB48+QTaYedUg0mqAa7P9VmTPGch7+kPwdDKI3IK+lIWn6tMtAfAAGBCiyZtNOavsJOT49FqPss4GOzJYbxnaFCVsYzNGrT7FRG2i9CTDoLlmaR8DEKmbCGiJHwuB3VluLnnT0Rk0t+k3k9kQ687R16fO5g8uCheGjd7367pDp8IjmoxWIkPVWLlHRE5k=" }
     os: "linux"
     language: "minimal"
