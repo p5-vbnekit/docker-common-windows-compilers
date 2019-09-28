@@ -61,7 +61,7 @@ jobs:
     - "export m_tools_directory_path=\"${TRAVIS_BUILD_DIR}/tools\""
     script: |
       "${m_python3_executable_path}" "${m_tools_directory_path}/travis_wait_alternative.py" sh -e << EOF
-      export PS4="executing command: "; set -x
+      export PS4="executing command: "; set -xo pipefail
       exit 0
       docker build --tag "chocolatey" --file "${TRAVIS_BUILD_DIR}/chocolatey.Dockerfile" .
       docker system prune --force
@@ -77,9 +77,10 @@ jobs:
     # before_install: "test -n \"${TRAVIS_TAG}\""
     install:
     - "sudo apt update"
-    - "sudo apt full-upgrade -y"
-    - "sudo apt install \"python3\" \"python3-pip\" \"python3-github\" \"python3-yaml\""
+    - "sudo apt install -y \"python3\" \"python3-pip\""
     - "sudo apt autoremove -y && sudo apt clean -y"
+    - "sudo \"${m_python3_executable_path}\" -m \"pip\" install --upgrade \"pip\""
+    - "sudo \"${m_python3_executable_path}\" -m \"pip\" install --upgrade \"PyGithub\" \"PyYAML\""
     before_script:
     - "export m_python3_executable_path=\"$(which python3)\""
     - "export m_tools_directory_path=\"${TRAVIS_BUILD_DIR}/tools\""
@@ -88,7 +89,7 @@ jobs:
     - "if test -z \"${TRAVIS_TAG}\"; then export TRAVIS_TAG=\"travis-${TRAVIS_COMMIT}\"; fi"
     script: |
       "${m_python3_executable_path}" "${m_tools_directory_path}/travis_wait_alternative.py" sh -e << EOF
-      export PS4="executing command: "; set -x
+      export PS4="executing command: "; set -xo pipefail
       "${m_python3_executable_path}" "${m_tools_directory_path}/download_released_image.py" "name: \"chocolatey.tar\"" "release: { draft: \"${TRAVIS_TAG}\"}" "token: {env: \"DOWNLOAD_TOKEN\"}" | xz -9 --threads=0 | split --numeric-suffixes --bytes=2GB - "/tmp/build/assets/chocolatey.tar.xz."
       (cd "/tmp/build/assets" && md5sum chocolatey.tar.xz.* > "chocolatey.tar.xz.md5.txt")
       EOF
@@ -131,9 +132,10 @@ jobs:
     # before_install: "test -n \"${TRAVIS_TAG}\""
     install:
     - "sudo apt update"
-    - "sudo apt full-upgrade -y"
-    - "sudo apt install \"python3\" \"python3-pip\" \"python3-github\" \"python3-yaml\""
+    - "sudo apt install -y \"python3\" \"python3-pip\""
     - "sudo apt autoremove -y && sudo apt clean -y"
+    - "sudo \"${m_python3_executable_path}\" -m \"pip\" install --upgrade \"pip\""
+    - "sudo \"${m_python3_executable_path}\" -m \"pip\" install --upgrade \"PyGithub\" \"PyYAML\""
     before_script:
     - "export m_python3_executable_path=\"$(which python3)\""
     - "export m_tools_directory_path=\"${TRAVIS_BUILD_DIR}/tools\""
@@ -142,7 +144,7 @@ jobs:
     - "if test -z \"${TRAVIS_TAG}\"; then export TRAVIS_TAG=\"travis-${TRAVIS_COMMIT}\"; fi"
     script: |
       "${m_python3_executable_path}" "${m_tools_directory_path}/travis_wait_alternative.py" sh -e << EOF
-      export PS4="executing command: "; set -x
+      export PS4="executing command: "; set -xo pipefail
       "${m_python3_executable_path}" "${m_tools_directory_path}/download_released_image.py" "name: \"msys2.tar\"" "release: { draft: \"${TRAVIS_TAG}\"}" "token: {env: \"DOWNLOAD_TOKEN\"}" | xz -9 --threads=0 | split --numeric-suffixes --bytes=2GB - "/tmp/build/assets/msys2.tar.xz."
       (cd "/tmp/build/assets" && md5sum msys2.tar.xz.* > "msys2.tar.xz.md5.txt")
       EOF
