@@ -25,7 +25,7 @@ after_deploy: "if test -n \"${m_deploy_ping_pid}\"; then kill \"${m_deploy_ping_
 jobs:
   include:
   - name: "prepare"
-    statge: "prepare"
+    stage: "prepare"
     os: "linux"
     language: "minimal"
     script: "true"
