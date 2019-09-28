@@ -14,7 +14,7 @@ yaml-dict-style options string:
   buffer_size: positive integer > 0, None or False for default; default is 128 * 1024 * 1024
 """
 
-import os, io, re, sys, yaml, time, ctypes, hashlib, github, traceback, urllib.request
+import os, io, re, sys, yaml, time, ctypes, hashlib, github, copy, traceback, requests
 
 if "__main__" == __name__: from __main__ import __file__ as main_path
 
@@ -26,7 +26,7 @@ def routine():
 
         m_default_name = "chocolatey.tar"
         m_default_repo = "p5-vbnekit/docker-common-windows-compilers"
-        m_default_release = None
+        m_default_release = { "draft": False, "name": None }
         m_default_token = None
         m_default_output = None
         m_default_verbose = True
@@ -35,20 +35,37 @@ def routine():
         self.__name = name
         if self.__name is None: self.__name = m_default_name
         elif self.__name is False: self.__name = m_default_name
-        elif not isinstance(self.__name, str): raise TypeError("invalid options, name: string expected")
-        elif not (0 < len(self.__name)): self.__name = m_default_name
+        else:
+          if not isinstance(self.__name, str): self.__name = str(self.__name)
+          if not (0 < len(self.__name)): self.__name = m_default_name
 
         self.__repo = repo
         if self.__repo is None: self.__repo = m_default_repo
         elif self.__repo is False: self.__repo = m_default_repo
-        elif not isinstance(self.__repo, str): raise TypeError("invalid options, repo: string expected")
-        elif not (0 < len(self.__repo)): self.__repo = m_default_repo
+        else:
+          if not isinstance(self.__repo, str): self.__repo = str(self.__repo)
+          if not (0 < len(self.__repo)): self.__repo = m_default_repo
 
         self.__release = release
-        if self.__release is None: pass
+        if self.__release is None: m_default_release
         elif self.__release is False: self.__release = m_default_release
-        elif not isinstance(self.__release, str): raise TypeError("invalid options, release: string expected")
-        elif not (0 < len(self.__release)): self.__release = m_default_release
+        elif isinstance(self.__release, dict):
+          def make_release():
+            m_items = self.__release.items()
+            if not 1 == len(m_items): ValueError("invalid options, token: \"draft: NAME:STRING\" expected")
+            m_key, m_value = next(iter(m_items))
+            if not isinstance(m_key, str): raise ValueError("invalid options, token: \"draft: NAME:STRING\" expected")
+            if m_value is None: pass
+            elif m_value is False: m_value = None
+            else:
+              if not isinstance(m_value, str): raise ValueError("invalid options, token: \"draft: NAME:STRING\" expected")
+              if not (0 < len(m_value)): m_value = None
+            return {"draft": True, "name": m_value}
+          self.__release = make_release()
+        else:
+          if not isinstance(self.__release, str): self.__release = str(self.__release)
+          if 0 < len(self.__release): self.__release = dict(m_default_release, name = self.__release)
+          else: self.__release = m_default_release
 
         self.__token = token
         if self.__token is None: pass
@@ -66,14 +83,16 @@ def routine():
               with open(m_value, "r") as m_stream: return m_stream.read()
             raise ValueError("invalid options, token: \"env: NAME:STRING\" expected")
           self.__token = make_token()
-        elif not isinstance(self.__token, str): raise TypeError("invalid options, token: string expected")
-        elif not (0 < len(self.__token)): self.__token = m_default_token
+        else:
+          if not isinstance(self.__token, str): self.__output = str(self.__token)
+          if not (0 < len(self.__token)): self.__token = m_default_token
 
         self.__output = output
         if self.__output is None: pass
         elif self.__output is False: self.__output = m_default_output
-        elif not isinstance(self.__output, str): raise TypeError("invalid options, output: string expected")
-        elif not (0 < len(self.__output)): self.__output = m_default_output
+        else:
+          if not isinstance(self.__output, str): self.__output = str(self.__output)
+          if not (0 < len(self.__output)): self.__output = m_default_output
 
         self.__verbose = verbose
         if self.__verbose is None: self.__verbose = m_default_verbose
@@ -123,24 +142,81 @@ def routine():
   m_log("{}: name = \"{}\"".format(main_path, m_options.name), file = sys.stderr)
   m_log("{}: repo = \"{}\"".format(main_path, m_options.repo), file = sys.stderr)
 
-  m_repo = github.Github(m_options.token).get_repo(m_options.repo)
-  m_latest_release = m_repo.get_latest_release()
-
   def make_release():
-    m_release = m_options.release
-    if m_release is None: return m_latest_release
-    return m_repo.get_release(m_release)
+    class Result(object):
+      def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        m_repo = github.Github(m_options.token).get_repo(m_options.repo)
+        m_release_option = m_options.release
+        m_name = m_release_option["name"]
+        if m_release_option["draft"]:
+          if m_name is None:
+            def make_latest():
+              m_latest = None
+              for m_release in m_repo.get_releases():
+                if m_release.draft:
+                  if m_latest is None: m_latest = m_release
+                  elif m_latest.created_at < m_release.created_at: m_latest = m_release
+              if m_latest is None: raise RuntimeError("draft not found")
+              return m_latest
+            self.__api = make_latest()
+            self.__is_latest = True
+          else:
+            def make_latest_and_expected():
+              m_latest = None
+              m_expected = None
+              for m_release in m_repo.get_releases():
+                if m_release.draft:
+                  if m_latest is None:
+                    m_latest = m_release
+                    if m_name == m_release.tag_name: m_expected = m_release
+                  else:
+                    if m_latest.created_at < m_release.created_at: m_latest = m_release
+                    if (m_name == m_release.tag_name):
+                      if m_expected is None: m_expected = m_release
+                      elif (m_name == m_expected.tag_name) and (m_expected.created_at < m_release.created_at): m_expected = m_release
+              if m_expected is None: raise RuntimeError("draft not found")
+              return (m_latest.id == m_expected.id), m_expected
+            self.__is_latest, self.__api = make_latest_and_expected()
+        else:
+          if m_name is None:
+            self.__api = m_repo.get_latest_release()
+            self.__is_latest = True
+          else:
+            self.__api = m_repo.get_release(m_name)
+            self.__is_latest = m_repo.get_latest_release().id == self.__api.id
+      api = property(lambda self: self.__api)
+      is_latest = property(lambda self: self.__is_latest)
+    return Result()
 
   m_release = make_release()
 
-  m_log("{}: release = {}".format(main_path, "\"{}\"{}".format(m_release.tag_name, ", latest" if m_latest_release.id == m_release.id else "")), file = sys.stderr)
+  m_log("{}: release = {}".format(main_path, "\"{}\"{}{}".format(m_release.api.tag_name, ", latest" if m_release.is_latest else "", ", draft" if m_options.release["draft"] else "")), file = sys.stderr)
   m_log("{}: token = {}".format(main_path, "\"***\"" if m_options.token else None), file = sys.stderr)
   m_log("{}: output = {}".format(main_path, "\"{}\"".format(m_options.output) if m_options.output else "stdout"), file = sys.stderr)
   m_log("{}: verbose = {}".format(main_path, m_options.verbose), file = sys.stderr)
   m_log("{}: buffer_size = {}".format(main_path, m_options.buffer_size), file = sys.stderr)
 
+  def make_download_stream_defaults():
+    m_result = {
+      "stream": True,
+      "headers": { "User-Agent": "Wget/1.20.3 (linux-gnu)", "Accept": "application/octet-stream" }
+    }
+
+    if not (m_options.token is None): m_result["auth"] = (m_options.token, "")
+    return m_result
+
+  m_download_stream_defaults = make_download_stream_defaults()
+
+  def make_download_stream(asset, offset = None):
+    m_options = copy.deepcopy(m_download_stream_defaults)
+    if not (offset is None):
+      if not isinstance(offset, int): raise TypeError("invalid offset, positive integer expected")
+      if 0 < offset: m_options["headers"]["Range"] = "bytes={}-".format(m_context.offset)
+    return requests.get(url = asset.url, **m_options).raw
+
   def make_assets():
-    return { m_asset.name:m_asset for m_asset in m_release.get_assets() }
+    return { m_asset.name: m_asset for m_asset in m_release.api.get_assets() }
 
   m_assets = make_assets()
 
@@ -164,7 +240,7 @@ def routine():
       name = property(lambda self: self.__name)
       digest = property(lambda self: self.__digest)
     m_asset = m_assets["{}.md5.txt".format(m_options.name)]
-    with urllib.request.urlopen(m_asset.browser_download_url) as m_response: return tuple([Record(m_line.decode("utf-8")) for m_line in m_response.readlines()])
+    with make_download_stream(m_asset) as m_response: return tuple([Record(m_line.decode("utf-8")) for m_line in m_response.readlines()])
 
   m_buffer = ctypes.create_string_buffer(m_options.buffer_size)
   m_buffer_length = len(m_buffer)
@@ -224,15 +300,11 @@ def routine():
       m_context = make_context()
 
       def make_input():
-        def routine():
-          m_headers = {"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.95 Safari/537.36"}
-          if (0 < m_context.offset): m_headers["Range"] = "bytes={}-".format(m_context.offset)
-          return urllib.request.urlopen(urllib.request.Request(url = m_asset.browser_download_url, headers = m_headers))
         m_try_number = 0
         while True:
           m_try_number += 1
-          m_log("{}: opening url, try #{}, asset = \"{}\", url = \"{}\"".format(main_path, m_try_number, md5_record.name, m_asset.browser_download_url), file = sys.stderr)
-          try: return routine()
+          m_log("{}: opening url, try #{}, asset = \"{}\", url = \"{}\"".format(main_path, m_try_number, md5_record.name, m_asset.url), file = sys.stderr)
+          try: return make_download_stream(m_asset, m_context.offset)
           except OSError:
             traceback.print_exc(file = sys.stderr)
             if not (3 > m_try_number): raise
