@@ -26,8 +26,8 @@ jobs:
     stage: "prepare"
     script: "true"
     # before_deploy: "export TRAVIS_TAG=\"${TRAVIS_TAG:-$(date +'%Y%m%d%H%M%S')-$(git log --format=%h -1)}\""
-    # before_deploy: "if test -z \"${TRAVIS_TAG}\"; then export TRAVIS_TAG=\"travis-${TRAVIS_COMMIT}\"; fi"
-    before_deploy: "export TRAVIS_TAG=\"travis-86c98e6ce9fa2817bdce36e33a3e9e0598bbf940\""
+    before_deploy: "if test -z \"${TRAVIS_TAG}\"; then export TRAVIS_TAG=\"travis-${TRAVIS_COMMIT}\"; fi"
+    # before_deploy: "export TRAVIS_TAG=\"travis-86c98e6ce9fa2817bdce36e33a3e9e0598bbf940\""
     deploy:
       file:
       file_glob: false
@@ -62,8 +62,8 @@ jobs:
       EOF
     before_deploy:
     - "\"${m_python3_executable_path}\" \"${m_tools_directory_path}/travis_deploy_stderr_ping.py\" & export m_travis_deploy_stderr_ping_pid=\"$!\""
-    - "export TRAVIS_TAG=\"travis-86c98e6ce9fa2817bdce36e33a3e9e0598bbf940\""
     - "if test -z \"${TRAVIS_TAG}\"; then export TRAVIS_TAG=\"travis-${TRAVIS_COMMIT}\"; fi"
+    # - "export TRAVIS_TAG=\"travis-86c98e6ce9fa2817bdce36e33a3e9e0598bbf940\""
     - "cd \"/tmp/build/assets\""
     after_deploy: "if test -n \"${m_travis_deploy_stderr_ping_pid}\"; then kill \"${m_travis_deploy_stderr_ping_pid}\" || true; fi"
 
@@ -80,8 +80,8 @@ jobs:
     before_script:
     - "mkdir -p \"/tmp/build/output\" \"/tmp/build/assets\""
     - "export m_tools_directory_path=\"${TRAVIS_BUILD_DIR}/tools\""
-    - "export TRAVIS_TAG=\"travis-86c98e6ce9fa2817bdce36e33a3e9e0598bbf940\""
     - "if test -z \"${TRAVIS_TAG}\"; then export TRAVIS_TAG=\"travis-${TRAVIS_COMMIT}\"; fi"
+    # - "export TRAVIS_TAG=\"travis-86c98e6ce9fa2817bdce36e33a3e9e0598bbf940\""
     script: |
       "${m_python3_executable_path}" "${m_tools_directory_path}/travis_wait_alternative.py" bash -e << EOF
       export PS4="executing command: "; set -xo pipefail
@@ -110,8 +110,8 @@ jobs:
     before_script:
     - "mkdir -p \"/tmp/build/output\" \"/tmp/build/assets\""
     - "export m_tools_directory_path=\"${TRAVIS_BUILD_DIR}/tools\""
-    - "export TRAVIS_TAG=\"travis-86c98e6ce9fa2817bdce36e33a3e9e0598bbf940\""
     - "if test -z \"${TRAVIS_TAG}\"; then export TRAVIS_TAG=\"travis-${TRAVIS_COMMIT}\"; fi"
+    # - "export TRAVIS_TAG=\"travis-86c98e6ce9fa2817bdce36e33a3e9e0598bbf940\""
     script: |
       "${m_python3_executable_path}" "${m_tools_directory_path}/travis_wait_alternative.py" sh -e << EOF
       export PS4="executing command: "; set -xo pipefail
@@ -141,8 +141,8 @@ jobs:
     before_script:
     - "mkdir -p \"/tmp/build/output\" \"/tmp/build/assets\""
     - "export m_tools_directory_path=\"${TRAVIS_BUILD_DIR}/tools\""
-    - "export TRAVIS_TAG=\"travis-86c98e6ce9fa2817bdce36e33a3e9e0598bbf940\""
     - "if test -z \"${TRAVIS_TAG}\"; then export TRAVIS_TAG=\"travis-${TRAVIS_COMMIT}\"; fi"
+    # - "export TRAVIS_TAG=\"travis-86c98e6ce9fa2817bdce36e33a3e9e0598bbf940\""
     script: |
       "${m_python3_executable_path}" "${m_tools_directory_path}/travis_wait_alternative.py" bash -e << EOF
       export PS4="executing command: "; set -xo pipefail
@@ -156,8 +156,9 @@ jobs:
 
   - name: "publish"
     stage: "publish"
-    script: "if test -z \"${TRAVIS_TAG}\"; then export TRAVIS_TAG=\"travis-${TRAVIS_COMMIT}\"; fi"
-    before_deploy: "export TRAVIS_TAG=\"travis-86c98e6ce9fa2817bdce36e33a3e9e0598bbf940\""
+    script: "true"
+    before_deploy: "if test -z \"${TRAVIS_TAG}\"; then export TRAVIS_TAG=\"travis-${TRAVIS_COMMIT}\"; fi"
+    # before_deploy: "export TRAVIS_TAG=\"travis-86c98e6ce9fa2817bdce36e33a3e9e0598bbf940\""
     deploy:
       file:
       file_glob: false
