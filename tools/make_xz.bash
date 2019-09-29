@@ -21,5 +21,5 @@ mkdir -p "/tmp/build/output"
 m_temporary_tar_path="/tmp/build/output/${m_base_name}"
 
 "${m_python3_executable_path}" "${m_download_released_image_py_path}" "name: \"${m_base_name}\"" "release: { draft: \"${TRAVIS_TAG}\"}" "token: {env: \"DOWNLOAD_TOKEN\"}" "output: \"${m_temporary_tar_path}\""
-(xz -9 --to-stdout --threads=0 "${m_temporary_tar_path}"; rm -f "${m_temporary_tar_path}") | split --numeric-suffixes --bytes=2GB - "/tmp/build/assets/${m_base_name}.xz."
+(xz -1 --to-stdout --threads=0 "${m_temporary_tar_path}"; rm -f "${m_temporary_tar_path}") | split --numeric-suffixes --bytes=2GB - "/tmp/build/assets/${m_base_name}.xz."
 (cd "/tmp/build/assets" && md5sum "${m_base_name}".xz.* > "${m_base_name}.xz.md5.txt")
