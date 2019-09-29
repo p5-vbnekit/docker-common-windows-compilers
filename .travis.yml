@@ -25,7 +25,6 @@ jobs:
   - name: "prepare"
     stage: "prepare"
     script: "true"
-    # before_deploy: "export TRAVIS_TAG=\"${TRAVIS_TAG:-$(date +'%Y%m%d%H%M%S')-$(git log --format=%h -1)}\""
     before_deploy: "if test -z \"${TRAVIS_TAG}\"; then export TRAVIS_TAG=\"travis-${TRAVIS_COMMIT}\"; fi"
     # before_deploy: "export TRAVIS_TAG=\"travis-86c98e6ce9fa2817bdce36e33a3e9e0598bbf940\""
     deploy:
@@ -146,8 +145,7 @@ jobs:
   - name: "publish"
     stage: "publish"
     script: "true"
-    before_deploy: "if test -z \"${TRAVIS_TAG}\"; then export TRAVIS_TAG=\"travis-${TRAVIS_COMMIT}\"; fi"
-    # before_deploy: "export TRAVIS_TAG=\"travis-86c98e6ce9fa2817bdce36e33a3e9e0598bbf940\""
+    before_deploy: "export TRAVIS_TAG=\"${TRAVIS_TAG:-$(date +'%Y%m%d%H%M%S')-$(git log --format=%h -1)}\""
     deploy:
       file:
       file_glob: false
