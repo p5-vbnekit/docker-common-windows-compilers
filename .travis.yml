@@ -85,8 +85,11 @@ jobs:
     script: |
       "${m_python3_executable_path}" "${m_tools_directory_path}/travis_wait_alternative.py" bash -e << EOF
       export PS4="executing command: "; set -xo pipefail
-      "${m_python3_executable_path}" "${m_tools_directory_path}/download_released_image.py" "name: \"chocolatey.tar\"" "release: { draft: \"${TRAVIS_TAG}\"}" "token: {env: \"DOWNLOAD_TOKEN\"}" | xz -9 --threads=0 | split --numeric-suffixes --bytes=2GB - "/tmp/build/assets/chocolatey.tar.xz."
-      (cd "/tmp/build/assets" && md5sum chocolatey.tar.xz.* > "chocolatey.tar.xz.md5.txt")
+      m_tar_name="chocolatey.tar"
+      m_temporary_tar_path=/tmp/build/output/${m_tar_name}
+      "${m_python3_executable_path}" "${m_tools_directory_path}/download_released_image.py" "name: \"${m_tar_name}\"" "release: { draft: \"${TRAVIS_TAG}\"}" "token: {env: \"DOWNLOAD_TOKEN\"}" "output: \"${m_temporary_tar_path}\""
+      (xz -9 --threads=0 --to-stdout "${m_temporary_tar_path}"; rm -f "${m_temporary_tar_path}") | split --numeric-suffixes --bytes=2GB - "/tmp/build/assets/${m_tar_name}.xz."
+      (cd "/tmp/build/assets" && md5sum "${m_tar_name}".xz.* > "${m_tar_name}.xz.md5.txt")
       EOF
     before_deploy:
     - "\"${m_python3_executable_path}\" \"${m_tools_directory_path}/travis_deploy_stderr_ping.py\" & export m_travis_deploy_stderr_ping_pid=\"$!\""
@@ -146,8 +149,11 @@ jobs:
     script: |
       "${m_python3_executable_path}" "${m_tools_directory_path}/travis_wait_alternative.py" bash -e << EOF
       export PS4="executing command: "; set -xo pipefail
-      "${m_python3_executable_path}" "${m_tools_directory_path}/download_released_image.py" "name: \"msys2.tar\"" "release: { draft: \"${TRAVIS_TAG}\"}" "token: {env: \"DOWNLOAD_TOKEN\"}" | xz -9 --threads=0 | split --numeric-suffixes --bytes=2GB - "/tmp/build/assets/msys2.tar.xz."
-      (cd "/tmp/build/assets" && md5sum msys2.tar.xz.* > "msys2.tar.xz.md5.txt")
+      m_tar_name="msys2.tar"
+      m_temporary_tar_path=/tmp/build/output/${m_tar_name}
+      "${m_python3_executable_path}" "${m_tools_directory_path}/download_released_image.py" "name: \"${m_tar_name}\"" "release: { draft: \"${TRAVIS_TAG}\"}" "token: {env: \"DOWNLOAD_TOKEN\"}" "output: \"${m_temporary_tar_path}\""
+      (xz -9 --threads=0 --to-stdout "${m_temporary_tar_path}"; rm -f "${m_temporary_tar_path}") | split --numeric-suffixes --bytes=2GB - "/tmp/build/assets/${m_tar_name}.xz."
+      (cd "/tmp/build/assets" && md5sum "${m_tar_name}".xz.* > "${m_tar_name}.xz.md5.txt")
       EOF
     before_deploy:
     - "\"${m_python3_executable_path}\" \"${m_tools_directory_path}/travis_deploy_stderr_ping.py\" & export m_travis_deploy_stderr_ping_pid=\"$!\""
