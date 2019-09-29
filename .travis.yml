@@ -88,7 +88,7 @@ jobs:
       m_tar_name="chocolatey.tar"
       m_temporary_tar_path=/tmp/build/output/${m_tar_name}
       "${m_python3_executable_path}" "${m_tools_directory_path}/download_released_image.py" "name: \"${m_tar_name}\"" "release: { draft: \"${TRAVIS_TAG}\"}" "token: {env: \"DOWNLOAD_TOKEN\"}" "output: \"${m_temporary_tar_path}\""
-      (xz -9 --threads=0 --to-stdout "${m_temporary_tar_path}"; rm -f "${m_temporary_tar_path}") | split --numeric-suffixes --bytes=2GB - "/tmp/build/assets/${m_tar_name}.xz."
+      (xz -9 --to-stdout --threads=0 "${m_temporary_tar_path}"; rm -f "${m_temporary_tar_path}") | split --numeric-suffixes --bytes=2GB - "/tmp/build/assets/${m_tar_name}.xz."
       (cd "/tmp/build/assets" && md5sum "${m_tar_name}".xz.* > "${m_tar_name}.xz.md5.txt")
       EOF
     before_deploy:
@@ -152,7 +152,7 @@ jobs:
       m_tar_name="msys2.tar"
       m_temporary_tar_path=/tmp/build/output/${m_tar_name}
       "${m_python3_executable_path}" "${m_tools_directory_path}/download_released_image.py" "name: \"${m_tar_name}\"" "release: { draft: \"${TRAVIS_TAG}\"}" "token: {env: \"DOWNLOAD_TOKEN\"}" "output: \"${m_temporary_tar_path}\""
-      (xz -9 --threads=0 --to-stdout "${m_temporary_tar_path}"; rm -f "${m_temporary_tar_path}") | split --numeric-suffixes --bytes=2GB - "/tmp/build/assets/${m_tar_name}.xz."
+      (xz -9 --to-stdout --threads=0 "${m_temporary_tar_path}"; rm -f "${m_temporary_tar_path}") | split --numeric-suffixes --bytes=2GB - "/tmp/build/assets/${m_tar_name}.xz."
       (cd "/tmp/build/assets" && md5sum "${m_tar_name}".xz.* > "${m_tar_name}.xz.md5.txt")
       EOF
     before_deploy:
