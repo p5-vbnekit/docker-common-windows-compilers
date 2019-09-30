@@ -9,11 +9,11 @@ Auomated builds and releases powered by [travis-ci](https://travis-ci.org/p5-vbn
 - [Releases history](../../releases)
 
 Since [maximum release asset file size is limited by github](https://help.github.com/en/articles/about-releases#limitations-on-binary-files), I have to split them into parts.<br/>
-This parts named as `${IMAGE}.tar[.xz].${NN}`.<br/>
-Each asset image is accompanied by md5 list text file: `${IMAGE}.tar[.xz].md5.txt`.<br/>
-Just download all parts of the current image and call something like: `cat ${IMAGE}.tar.* | docker load`.<br/>
+This parts named as `${IMAGE}.tar.xz.${NN}`.<br/>
+Each asset image is accompanied by md5 list text file: `${IMAGE}.tar.xz.md5.txt`.<br/>
+Just download all parts of the current image and call something like: `cat ${IMAGE}.tar.xz.* | xz --decompress --stdout --threads=0 | docker load`.<br/>
 Also you can use [this script (tools/download_released_image.py)](tools/download_released_image.py):
-`python3 tools/dowload_released_image.py "name: ${IMAGE}.tar" | docker load`
+`python3 tools/dowload_released_image.py "name: ${IMAGE}.tar.xz" | xz --decompress --stdout --threads=0 | docker load`
 
 ## Images
 ### chocolatey
