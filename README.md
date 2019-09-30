@@ -6,10 +6,13 @@ Auomated builds and releases powered by [travis-ci](https://travis-ci.org/p5-vbn
 ### Links:
 - [Latest release](../../releases/latest)
 - [Releases history](../../releases)
-Since [maximum release asset file size is limited by github](https://help.github.com/en/articles/about-releases#limitations-on-binary-files), I have to split them into parts.<br/>
-This parts named as `${IMAGE}.tar.xz.${NN}`.<br/>
-Each asset image is accompanied by md5 list text file: `${IMAGE}.tar.xz.md5.txt`.<br/>
-Just download all parts of the current image and call something like: `cat ${IMAGE}.tar.xz.* | xz --decompress --stdout | docker load`.<br/>
+
+Since [maximum release asset file size is limited by github](https://help.github.com/en/articles/about-releases#limitations-on-binary-files), I have to split them into parts. If the image release asset file size exceeds the limit of github (2 GB), then this file will be split into parts with `${IMAGE}.tar.xz.${NN}` naming pattern. Otherwise, it'll be named just like `${IMAGE}.tar.xz`.<br/>
+Each image release is accompanied by md5 list text file: `${IMAGE}.tar.xz.md5.txt`.<br/>
+Just download all parts of your desired image and call something like:
+- `cat ${IMAGE}.tar.xz | xz --decompress --stdout | docker load` (in case of "small" size)
+- or `cat ${IMAGE}.tar.xz.* | xz --decompress --stdout | docker load`
+
 Also you can use [this script (tools/download_released_image.py)](tools/download_released_image.py): `python3 tools/dowload_released_image.py "name: ${IMAGE}.tar.xz" | xz --decompress --stdout | docker load`
 ## Images
 ### chocolatey
