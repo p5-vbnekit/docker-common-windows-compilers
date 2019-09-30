@@ -55,7 +55,17 @@ jobs:
       docker save "${m_image_name}" | "${m_tools_directory_path}/xz.exe" -4 --compress --stdout --threads=0 | split --numeric-suffixes --bytes=2GB - "/tmp/build/assets/${m_image_name}.tar.xz."
       docker rmi "${m_image_name}"
       docker system prune --force
-      (cd "/tmp/build/assets" && md5sum "${m_image_name}.tar.xz."* > "${m_image_name}.tar.xz.md5.txt")
+      (
+        set -eo pipefail
+        cd "/tmp/build/assets"
+        m_list=$((for m_file in "${m_image_name}.tar.xz."*; do echo "${m_file}"; done) | sed -rne '/^.{'"$(echo -n ${m_image_name} | wc -c)"'}+\.tar\.xz\.[0-9]{2}$/p')
+        test -n "${m_list}"
+        if test "${m_image_name}.tar.xz.00" = "${m_list}"; then
+          mv "${m_image_name}.tar.xz.00" "${m_image_name}.tar.xz" && md5sum "${m_image_name}.tar.xz" # > "${m_image_name}.tar.xz.md5.txt"
+        else
+          echo "${m_list}" | xargs --delimiter="\n" md5sum # > "${m_image_name}.tar.xz.md5.txt"
+        fi
+      )
       EOF
     before_deploy:
     - "\"${m_python3_executable_path}\" \"${m_tools_directory_path}/work_around_travis_long_time_deploy.py\" & export m_work_around_travis_long_time_deploy_pid=\"$!\""
@@ -91,7 +101,17 @@ jobs:
       docker save "${m_image_name}" | "${m_tools_directory_path}/xz.exe" -3 --compress --stdout --threads=0 | split --numeric-suffixes --bytes=2GB - "/tmp/build/assets/${m_image_name}.tar.xz."
       docker rmi "${m_image_name}" "chocolatey"
       docker system prune --force
-      (cd "/tmp/build/assets" && md5sum "${m_image_name}.tar.xz."* > "${m_image_name}.tar.xz.md5.txt")
+      (
+        set -eo pipefail
+        cd "/tmp/build/assets"
+        m_list=$((for m_file in "${m_image_name}.tar.xz."*; do echo "${m_file}"; done) | sed -rne '/^.{'"$(echo -n ${m_image_name} | wc -c)"'}+\.tar\.xz\.[0-9]{2}$/p')
+        test -n "${m_list}"
+        if test "${m_image_name}.tar.xz.00" = "${m_list}"; then
+          mv "${m_image_name}.tar.xz.00" "${m_image_name}.tar.xz" && md5sum "${m_image_name}.tar.xz" # > "${m_image_name}.tar.xz.md5.txt"
+        else
+          echo "${m_list}" | xargs --delimiter="\n" md5sum # > "${m_image_name}.tar.xz.md5.txt"
+        fi
+      )
       EOF
     before_deploy:
     - "\"${m_python3_executable_path}\" \"${m_tools_directory_path}/work_around_travis_long_time_deploy.py\" & export m_work_around_travis_long_time_deploy_pid=\"$!\""
@@ -126,7 +146,17 @@ jobs:
       docker save "${m_image_name}" | "${m_tools_directory_path}/xz.exe" -3 --compress --stdout --threads=0 | split --numeric-suffixes --bytes=2GB - "/tmp/build/assets/${m_image_name}.tar.xz."
       docker rmi "${m_image_name}" "chocolatey"
       docker system prune --force
-      (cd "/tmp/build/assets" && md5sum "${m_image_name}.tar.xz."* > "${m_image_name}.tar.xz.md5.txt")
+      (
+        set -eo pipefail
+        cd "/tmp/build/assets"
+        m_list=$((for m_file in "${m_image_name}.tar.xz."*; do echo "${m_file}"; done) | sed -rne '/^.{'"$(echo -n ${m_image_name} | wc -c)"'}+\.tar\.xz\.[0-9]{2}$/p')
+        test -n "${m_list}"
+        if test "${m_image_name}.tar.xz.00" = "${m_list}"; then
+          mv "${m_image_name}.tar.xz.00" "${m_image_name}.tar.xz" && md5sum "${m_image_name}.tar.xz" # > "${m_image_name}.tar.xz.md5.txt"
+        else
+          echo "${m_list}" | xargs --delimiter="\n" md5sum # > "${m_image_name}.tar.xz.md5.txt"
+        fi
+      )
       EOF
     before_deploy:
     - "\"${m_python3_executable_path}\" \"${m_tools_directory_path}/work_around_travis_long_time_deploy.py\" & export m_work_around_travis_long_time_deploy_pid=\"$!\""
@@ -161,7 +191,17 @@ jobs:
       docker save "${m_image_name}" | "${m_tools_directory_path}/xz.exe" -3 --compress --stdout --threads=0 | split --numeric-suffixes --bytes=2GB - "/tmp/build/assets/${m_image_name}.tar.xz."
       docker rmi "${m_image_name}" "chocolatey"
       docker system prune --force
-      (cd "/tmp/build/assets" && md5sum "${m_image_name}.tar.xz."* > "${m_image_name}.tar.xz.md5.txt")
+      (
+        set -eo pipefail
+        cd "/tmp/build/assets"
+        m_list=$((for m_file in "${m_image_name}.tar.xz."*; do echo "${m_file}"; done) | sed -rne '/^.{'"$(echo -n ${m_image_name} | wc -c)"'}+\.tar\.xz\.[0-9]{2}$/p')
+        test -n "${m_list}"
+        if test "${m_image_name}.tar.xz.00" = "${m_list}"; then
+          mv "${m_image_name}.tar.xz.00" "${m_image_name}.tar.xz" && md5sum "${m_image_name}.tar.xz" # > "${m_image_name}.tar.xz.md5.txt"
+        else
+          echo "${m_list}" | xargs --delimiter="\n" md5sum # > "${m_image_name}.tar.xz.md5.txt"
+        fi
+      )
       EOF
     before_deploy:
     - "\"${m_python3_executable_path}\" \"${m_tools_directory_path}/work_around_travis_long_time_deploy.py\" & export m_work_around_travis_long_time_deploy_pid=\"$!\""
