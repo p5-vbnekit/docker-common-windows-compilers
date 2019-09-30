@@ -153,7 +153,7 @@ jobs:
     before_script: "export m_tools_directory_path=\"${TRAVIS_BUILD_DIR}/tools\""
     script: |
       if test -z "${TRAVIS_TAG}"; then
-        export TRAVIS_TAG="${TRAVIS_TAG:-$(date +'%Y%m%d%H%M%S')-$(git log --format=%h -1)}"
+        export TRAVIS_TAG="$(date --utc +'%Y.%m.%d-%H.%M.%S')-$(git log --format=%h -1)"
         "${m_python3_executable_path}" "${m_tools_directory_path}/rename_release.py" "travis-${TRAVIS_COMMIT}" "${TRAVIS_TAG}" "DOWNLOAD_TOKEN"
       fi
     deploy:
