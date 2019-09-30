@@ -50,6 +50,7 @@ jobs:
     - "export m_python3_executable_path=\"${m_python3_directory_path}/python.exe\""
     script: |
       "${m_python3_executable_path}" "${m_tools_directory_path}/travis_wait_alternative.py" sh -e << EOF
+      exit 0
       export PS4="executing command: "; set -xo pipefail
       docker build --tag "chocolatey" --file "${TRAVIS_BUILD_DIR}/chocolatey.Dockerfile" .
       docker system prune --force
