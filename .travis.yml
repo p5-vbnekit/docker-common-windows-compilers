@@ -69,8 +69,8 @@ jobs:
   #- name: "chocolatey.tar.xz"
     #stage: "build-2"
     #env: { secure: "WjfnxHX3BTNCVzmE/hAILv8NwVT0MbuUDG8FhvVY7VscDMd3ow4+ZtCaDT5a4Sba/o1WGpp7Q3kSh4+fnSHVpZGIe/k4JZ2nOhLukWdNLl8FKAku+9rriVZDe11o1tANhUDMDF3ala+aJ7ETO4Ocg2rc9BKQBTcF58rpf1m/Hx8sy3aVBwcvHJwNvu/I1Nir7eDpUT8yrTH14e4r+K+HvfjlmAB6pc/FuufdfOzu9uXwj9d7O2Ay9xuI1p6KwNPDhddaH4oWuPLFLjw9U2YX34sf5r3OYhE43YNAzyN+lNp2QhTJVvgG8JkURW9zp/gU76MI+cI/iOjaj6uRzD0q/F8kBHM2tWGTOdOYxolRhbMcdAkZ7iTBUEPKFW6jmenWf102xp4WKQNsDhXnzooAMLSrkKHmDpHCEL3pPFzbLkFl46Oio5Ze/+qbbQvq3Zk9dv7HeNd+0441Q5PCZqD6Z4RjrwVK7aC0l4lwgOjCHBJrK+EDk2Ab/2Vsja7pyQcLBOMQ+Gdvct0uDAE/94H1ETpurgDQ08397iufREpj9c+35u/BP6XygnjvBnYXf8GBAs7MVCo0O6uZuARtj6geVn7SiIhbkF8Tv2bycv1meB59b0L66Gc7xHRAdyQrVbcuAxKHz75Qfi5lPb4BTBqBymrfsSEcwlbx5J8ncqS44GU=" }
+    #before_install: "sudo rm -rf ~/.cache && mkdir ~/.cache"
     #install:
-    #- "sudo rm -rf ~/.cache && mkdir ~/.cache"
     #- "sudo su -c 'apt update && apt install -y python3-github python3-yaml python3-pip python3-setuptools python3'"
     #- "sudo su -c 'apt autoremove -y && apt clean -y'"
     #- "export m_python3_executable_path=\"$(which python3)\""
@@ -125,8 +125,8 @@ jobs:
   #- name: "msys2.tar.xz"
     #stage: "build-3"
     #env: { secure: "WjfnxHX3BTNCVzmE/hAILv8NwVT0MbuUDG8FhvVY7VscDMd3ow4+ZtCaDT5a4Sba/o1WGpp7Q3kSh4+fnSHVpZGIe/k4JZ2nOhLukWdNLl8FKAku+9rriVZDe11o1tANhUDMDF3ala+aJ7ETO4Ocg2rc9BKQBTcF58rpf1m/Hx8sy3aVBwcvHJwNvu/I1Nir7eDpUT8yrTH14e4r+K+HvfjlmAB6pc/FuufdfOzu9uXwj9d7O2Ay9xuI1p6KwNPDhddaH4oWuPLFLjw9U2YX34sf5r3OYhE43YNAzyN+lNp2QhTJVvgG8JkURW9zp/gU76MI+cI/iOjaj6uRzD0q/F8kBHM2tWGTOdOYxolRhbMcdAkZ7iTBUEPKFW6jmenWf102xp4WKQNsDhXnzooAMLSrkKHmDpHCEL3pPFzbLkFl46Oio5Ze/+qbbQvq3Zk9dv7HeNd+0441Q5PCZqD6Z4RjrwVK7aC0l4lwgOjCHBJrK+EDk2Ab/2Vsja7pyQcLBOMQ+Gdvct0uDAE/94H1ETpurgDQ08397iufREpj9c+35u/BP6XygnjvBnYXf8GBAs7MVCo0O6uZuARtj6geVn7SiIhbkF8Tv2bycv1meB59b0L66Gc7xHRAdyQrVbcuAxKHz75Qfi5lPb4BTBqBymrfsSEcwlbx5J8ncqS44GU=" }
+    #before_install: "sudo rm -rf ~/.cache && mkdir ~/.cache"
     #install:
-    #- "sudo rm -rf ~/.cache && mkdir ~/.cache"
     #- "sudo su -c 'apt update && apt install -y python3-github python3-yaml python3-pip python3-setuptools python3'"
     #- "sudo su -c 'apt autoremove -y && apt clean -y'"
     #- "export m_python3_executable_path=\"$(which python3)\""
@@ -155,10 +155,10 @@ jobs:
     - "sudo \"${m_python3_executable_path}\" -m \"pip\" install --upgrade \"PyGithub\""
     before_script: "export m_tools_directory_path=\"${TRAVIS_BUILD_DIR}/tools\""
     script: |
-    if test -z "${TRAVIS_TAG}"; then
-      export TRAVIS_TAG="${TRAVIS_TAG:-$(date +'%Y%m%d%H%M%S')-$(git log --format=%h -1)}"
-      "${m_python3_executable_path}" "${m_tools_directory_path}/rename_release.py" "travis-${TRAVIS_COMMIT}" "${TRAVIS_TAG}" "DOWNLOAD_TOKEN"
-    fi
+      if test -z "${TRAVIS_TAG}"; then
+        export TRAVIS_TAG="${TRAVIS_TAG:-$(date +'%Y%m%d%H%M%S')-$(git log --format=%h -1)}"
+        "${m_python3_executable_path}" "${m_tools_directory_path}/rename_release.py" "travis-${TRAVIS_COMMIT}" "${TRAVIS_TAG}" "DOWNLOAD_TOKEN"
+      fi
     deploy:
       file:
       file_glob: false
