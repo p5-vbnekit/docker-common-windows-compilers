@@ -47,7 +47,7 @@ jobs:
     - "mkdir -p \"/tmp/build/input\" \"/tmp/build/output\" \"/tmp/build/assets\""
     - "export m_python3_executable_path=\"${m_python3_directory_path}/python.exe\""
     script: |
-      "${m_python3_executable_path}" "${m_tools_directory_path}/work_around_travis_long_time_command.py" sh -e << EOF
+      "${m_python3_executable_path}" "${m_tools_directory_path}/work_around_travis_long_time_command.py" sh -e << "EOF"
       export PS4="executing command: "; set -xo pipefail
       export m_image_name="chocolatey"
       docker build --tag "${m_image_name}" --file "${TRAVIS_BUILD_DIR}/${m_image_name}.Dockerfile" "/tmp/build/input"
@@ -92,7 +92,7 @@ jobs:
     - "export m_tools_directory_path=\"${TRAVIS_BUILD_DIR}/tools\""
     - "if test -z \"${TRAVIS_TAG}\"; then export TRAVIS_TAG=\"travis-${TRAVIS_COMMIT}\"; fi"
     script: |
-      "${m_python3_executable_path}" "${m_tools_directory_path}/work_around_travis_long_time_command.py" sh -e << EOF
+      "${m_python3_executable_path}" "${m_tools_directory_path}/work_around_travis_long_time_command.py" sh -e << "EOF"
       export PS4="executing command: "; set -xo pipefail
       export m_image_name="msys2"
       "${m_python3_executable_path}" "${m_tools_directory_path}/download_released_image.py" "name: \"chocolatey.tar.xz\"" "release: { draft: \"${TRAVIS_TAG}\"}" "token: {env: \"DOWNLOAD_TOKEN\"}" | "${m_tools_directory_path}/xz.exe" --decompress --stdout --threads=0 | docker load
@@ -137,7 +137,7 @@ jobs:
     - "export m_tools_directory_path=\"${TRAVIS_BUILD_DIR}/tools\""
     - "if test -z \"${TRAVIS_TAG}\"; then export TRAVIS_TAG=\"travis-${TRAVIS_COMMIT}\"; fi"
     script: |
-      "${m_python3_executable_path}" "${m_tools_directory_path}/work_around_travis_long_time_command.py" sh -e << EOF
+      "${m_python3_executable_path}" "${m_tools_directory_path}/work_around_travis_long_time_command.py" sh -e << "EOF"
       export PS4="executing command: "; set -xo pipefail
       export m_image_name="visualstudio2017community"
       "${m_python3_executable_path}" "${m_tools_directory_path}/download_released_image.py" "name: \"chocolatey.tar.xz\"" "release: { draft: \"${TRAVIS_TAG}\"}" "token: {env: \"DOWNLOAD_TOKEN\"}" | "${m_tools_directory_path}/xz.exe" --decompress --stdout --threads=0 | docker load
@@ -182,7 +182,7 @@ jobs:
     - "export m_tools_directory_path=\"${TRAVIS_BUILD_DIR}/tools\""
     - "if test -z \"${TRAVIS_TAG}\"; then export TRAVIS_TAG=\"travis-${TRAVIS_COMMIT}\"; fi"
     script: |
-      "${m_python3_executable_path}" "${m_tools_directory_path}/work_around_travis_long_time_command.py" sh -e << EOF
+      "${m_python3_executable_path}" "${m_tools_directory_path}/work_around_travis_long_time_command.py" sh -e << "EOF"
       export PS4="executing command: "; set -xo pipefail
       export m_image_name="visualstudio2019community"
       "${m_python3_executable_path}" "${m_tools_directory_path}/download_released_image.py" "name: \"chocolatey.tar.xz\"" "release: { draft: \"${TRAVIS_TAG}\"}" "token: {env: \"DOWNLOAD_TOKEN\"}" | "${m_tools_directory_path}/xz.exe" --decompress --stdout --threads=0 | docker load
