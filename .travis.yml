@@ -44,17 +44,18 @@ jobs:
     - "export m_tools_directory_path=\"${TRAVIS_BUILD_DIR}/tools\""
     install: "sh -e \"${m_tools_directory_path}/choco_install_python3.sh\" \"${m_python3_directory_path}\""
     before_script:
-    - "mkdir -p \"/tmp/build/output\" \"/tmp/build/assets\""
+    - "mkdir -p \"/tmp/build/input\" \"/tmp/build/output\" \"/tmp/build/assets\""
     - "export m_python3_executable_path=\"${m_python3_directory_path}/python.exe\""
     script: |
       "${m_python3_executable_path}" "${m_tools_directory_path}/work_around_travis_long_time_command.py" sh -e << EOF
       export PS4="executing command: "; set -xo pipefail
-      docker build --tag "chocolatey" --file "${TRAVIS_BUILD_DIR}/chocolatey.Dockerfile" .
+      export m_image_name="chocolatey"
+      docker build --tag "${m_image_name}" --file "${TRAVIS_BUILD_DIR}/${m_image_name}.Dockerfile" "/tmp/build/input"
       docker system prune --force
-      docker save "chocolatey" | "${m_tools_directory_path}/xz.exe" -4 --compress --stdout --threads=0 | split --numeric-suffixes --bytes=2GB - "/tmp/build/assets/chocolatey.tar.xz."
-      docker rmi "chocolatey"
+      docker save "${m_image_name}" | "${m_tools_directory_path}/xz.exe" -4 --compress --stdout --threads=0 | split --numeric-suffixes --bytes=2GB - "/tmp/build/assets/${m_image_name}.tar.xz."
+      docker rmi "${m_image_name}"
       docker system prune --force
-      (cd "/tmp/build/assets" && md5sum chocolatey.tar.xz.* > "chocolatey.tar.xz.md5.txt")
+      (cd "/tmp/build/assets" && md5sum "${m_image_name}.tar.xz."* > "${m_image_name}.tar.xz.md5.txt")
       EOF
     before_deploy:
     - "\"${m_python3_executable_path}\" \"${m_tools_directory_path}/work_around_travis_long_time_deploy.py\" & export m_work_around_travis_long_time_deploy_pid=\"$!\""
@@ -77,19 +78,20 @@ jobs:
     - "\"${m_python3_executable_path}\" -m \"pip\" install --upgrade \"pip\""
     - "\"${m_python3_executable_path}\" -m \"pip\" install --upgrade \"PyGithub\" \"PyYAML\""
     before_script:
-    - "mkdir -p \"/tmp/build/output\" \"/tmp/build/assets\""
+    - "mkdir -p \"/tmp/build/input\" \"/tmp/build/output\" \"/tmp/build/assets\""
     - "export m_tools_directory_path=\"${TRAVIS_BUILD_DIR}/tools\""
     - "if test -z \"${TRAVIS_TAG}\"; then export TRAVIS_TAG=\"travis-${TRAVIS_COMMIT}\"; fi"
     script: |
       "${m_python3_executable_path}" "${m_tools_directory_path}/work_around_travis_long_time_command.py" sh -e << EOF
       export PS4="executing command: "; set -xo pipefail
+      export m_image_name="msys2"
       "${m_python3_executable_path}" "${m_tools_directory_path}/download_released_image.py" "name: \"chocolatey.tar.xz\"" "release: { draft: \"${TRAVIS_TAG}\"}" "token: {env: \"DOWNLOAD_TOKEN\"}" | "${m_tools_directory_path}/xz.exe" --decompress --stdout --threads=0 | docker load
-      docker build --tag "msys2" --file "${TRAVIS_BUILD_DIR}/msys2.Dockerfile" .
+      docker build --tag "${m_image_name}" --file "${TRAVIS_BUILD_DIR}/${m_image_name}.Dockerfile" "/tmp/build/input"
       docker system prune --force
-      docker save "msys2" | "${m_tools_directory_path}/xz.exe" -3 --compress --stdout --threads=0 | split --numeric-suffixes --bytes=2GB - "/tmp/build/assets/msys2.tar.xz."
-      docker rmi "msys2" "chocolatey"
+      docker save "${m_image_name}" | "${m_tools_directory_path}/xz.exe" -3 --compress --stdout --threads=0 | split --numeric-suffixes --bytes=2GB - "/tmp/build/assets/${m_image_name}.tar.xz."
+      docker rmi "${m_image_name}" "chocolatey"
       docker system prune --force
-      (cd "/tmp/build/assets" && md5sum msys2.tar.xz.* > "msys2.tar.xz.md5.txt")
+      (cd "/tmp/build/assets" && md5sum "${m_image_name}.tar.xz."* > "${m_image_name}.tar.xz.md5.txt")
       EOF
     before_deploy:
     - "\"${m_python3_executable_path}\" \"${m_tools_directory_path}/work_around_travis_long_time_deploy.py\" & export m_work_around_travis_long_time_deploy_pid=\"$!\""
@@ -111,19 +113,20 @@ jobs:
     - "\"${m_python3_executable_path}\" -m \"pip\" install --upgrade \"pip\""
     - "\"${m_python3_executable_path}\" -m \"pip\" install --upgrade \"PyGithub\" \"PyYAML\""
     before_script:
-    - "mkdir -p \"/tmp/build/output\" \"/tmp/build/assets\""
+    - "mkdir -p \"/tmp/build/input\" \"/tmp/build/output\" \"/tmp/build/assets\""
     - "export m_tools_directory_path=\"${TRAVIS_BUILD_DIR}/tools\""
     - "if test -z \"${TRAVIS_TAG}\"; then export TRAVIS_TAG=\"travis-${TRAVIS_COMMIT}\"; fi"
     script: |
       "${m_python3_executable_path}" "${m_tools_directory_path}/work_around_travis_long_time_command.py" sh -e << EOF
       export PS4="executing command: "; set -xo pipefail
+      export m_image_name="visualstudio2017community"
       "${m_python3_executable_path}" "${m_tools_directory_path}/download_released_image.py" "name: \"chocolatey.tar.xz\"" "release: { draft: \"${TRAVIS_TAG}\"}" "token: {env: \"DOWNLOAD_TOKEN\"}" | "${m_tools_directory_path}/xz.exe" --decompress --stdout --threads=0 | docker load
-      docker build --tag "visualstudio2017community" --file "${TRAVIS_BUILD_DIR}/visualstudio2017community.Dockerfile" .
+      docker build --tag "${m_image_name}" --file "${TRAVIS_BUILD_DIR}/${m_image_name}.Dockerfile" "/tmp/build/input"
       docker system prune --force
-      docker save "visualstudio2017community" | "${m_tools_directory_path}/xz.exe" -3 --compress --stdout --threads=0 | split --numeric-suffixes --bytes=2GB - "/tmp/build/assets/visualstudio2017community.tar.xz."
-      docker rmi "visualstudio2017community" "chocolatey"
+      docker save "${m_image_name}" | "${m_tools_directory_path}/xz.exe" -3 --compress --stdout --threads=0 | split --numeric-suffixes --bytes=2GB - "/tmp/build/assets/${m_image_name}.tar.xz."
+      docker rmi "${m_image_name}" "chocolatey"
       docker system prune --force
-      (cd "/tmp/build/assets" && md5sum visualstudio2017community.tar.xz.* > "visualstudio2017community.tar.xz.md5.txt")
+      (cd "/tmp/build/assets" && md5sum "${m_image_name}.tar.xz."* > "${m_image_name}.tar.xz.md5.txt")
       EOF
     before_deploy:
     - "\"${m_python3_executable_path}\" \"${m_tools_directory_path}/work_around_travis_long_time_deploy.py\" & export m_work_around_travis_long_time_deploy_pid=\"$!\""
@@ -145,19 +148,20 @@ jobs:
     - "\"${m_python3_executable_path}\" -m \"pip\" install --upgrade \"pip\""
     - "\"${m_python3_executable_path}\" -m \"pip\" install --upgrade \"PyGithub\" \"PyYAML\""
     before_script:
-    - "mkdir -p \"/tmp/build/output\" \"/tmp/build/assets\""
+    - "mkdir -p \"/tmp/build/input\" \"/tmp/build/output\" \"/tmp/build/assets\""
     - "export m_tools_directory_path=\"${TRAVIS_BUILD_DIR}/tools\""
     - "if test -z \"${TRAVIS_TAG}\"; then export TRAVIS_TAG=\"travis-${TRAVIS_COMMIT}\"; fi"
     script: |
       "${m_python3_executable_path}" "${m_tools_directory_path}/work_around_travis_long_time_command.py" sh -e << EOF
       export PS4="executing command: "; set -xo pipefail
+      export m_image_name="visualstudio2019community"
       "${m_python3_executable_path}" "${m_tools_directory_path}/download_released_image.py" "name: \"chocolatey.tar.xz\"" "release: { draft: \"${TRAVIS_TAG}\"}" "token: {env: \"DOWNLOAD_TOKEN\"}" | "${m_tools_directory_path}/xz.exe" --decompress --stdout --threads=0 | docker load
-      docker build --tag "visualstudio2019community" --file "${TRAVIS_BUILD_DIR}/visualstudio2019community.Dockerfile" .
+      docker build --tag "${m_image_name}" --file "${TRAVIS_BUILD_DIR}/${m_image_name}.Dockerfile" "/tmp/build/input"
       docker system prune --force
-      docker save "visualstudio2019community" | "${m_tools_directory_path}/xz.exe" -3 --compress --stdout --threads=0 | split --numeric-suffixes --bytes=2GB - "/tmp/build/assets/visualstudio2019community.tar.xz."
-      docker rmi "visualstudio2019community" "chocolatey"
+      docker save "${m_image_name}" | "${m_tools_directory_path}/xz.exe" -3 --compress --stdout --threads=0 | split --numeric-suffixes --bytes=2GB - "/tmp/build/assets/${m_image_name}.tar.xz."
+      docker rmi "${m_image_name}" "chocolatey"
       docker system prune --force
-      (cd "/tmp/build/assets" && md5sum visualstudio2019community.tar.xz.* > "visualstudio2019community.tar.xz.md5.txt")
+      (cd "/tmp/build/assets" && md5sum "${m_image_name}.tar.xz."* > "${m_image_name}.tar.xz.md5.txt")
       EOF
     before_deploy:
     - "\"${m_python3_executable_path}\" \"${m_tools_directory_path}/work_around_travis_long_time_deploy.py\" & export m_work_around_travis_long_time_deploy_pid=\"$!\""

@@ -11,7 +11,7 @@ if "__main__" == __name__:
       event = property(lambda self: self.__event)
       wait_duration = property(lambda self: self.__wait_duration)
       initial_time_point = property(lambda self: self.__initial_time_point)
-      __wait_duration = +3.0e+0
+      __wait_duration = +1.2e+2
       __initial_time_point = time.monotonic()
       def __init__(self):
         super().__init__()
