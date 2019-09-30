@@ -61,9 +61,9 @@ jobs:
         m_list=$((for m_file in "${m_image_name}.tar.xz."*; do echo "${m_file}"; done) | sed -rne '/^.{'"$(echo -n ${m_image_name} | wc -c)"'}+\.tar\.xz\.[0-9]{2}$/p')
         test -n "${m_list}"
         if test "${m_image_name}.tar.xz.00" = "${m_list}"; then
-          mv "${m_image_name}.tar.xz.00" "${m_image_name}.tar.xz" && md5sum "${m_image_name}.tar.xz" # > "${m_image_name}.tar.xz.md5.txt"
+          mv "${m_image_name}.tar.xz.00" "${m_image_name}.tar.xz" && md5sum "${m_image_name}.tar.xz" > "${m_image_name}.tar.xz.md5.txt"
         else
-          echo "${m_list}" | xargs --delimiter="\n" md5sum # > "${m_image_name}.tar.xz.md5.txt"
+          echo "${m_list}" | xargs --delimiter="\n" md5sum > "${m_image_name}.tar.xz.md5.txt"
         fi
       )
       EOF
@@ -107,9 +107,9 @@ jobs:
         m_list=$((for m_file in "${m_image_name}.tar.xz."*; do echo "${m_file}"; done) | sed -rne '/^.{'"$(echo -n ${m_image_name} | wc -c)"'}+\.tar\.xz\.[0-9]{2}$/p')
         test -n "${m_list}"
         if test "${m_image_name}.tar.xz.00" = "${m_list}"; then
-          mv "${m_image_name}.tar.xz.00" "${m_image_name}.tar.xz" && md5sum "${m_image_name}.tar.xz" # > "${m_image_name}.tar.xz.md5.txt"
+          mv "${m_image_name}.tar.xz.00" "${m_image_name}.tar.xz" && md5sum "${m_image_name}.tar.xz" > "${m_image_name}.tar.xz.md5.txt"
         else
-          echo "${m_list}" | xargs --delimiter="\n" md5sum # > "${m_image_name}.tar.xz.md5.txt"
+          echo "${m_list}" | xargs --delimiter="\n" md5sum > "${m_image_name}.tar.xz.md5.txt"
         fi
       )
       EOF
@@ -152,9 +152,9 @@ jobs:
         m_list=$((for m_file in "${m_image_name}.tar.xz."*; do echo "${m_file}"; done) | sed -rne '/^.{'"$(echo -n ${m_image_name} | wc -c)"'}+\.tar\.xz\.[0-9]{2}$/p')
         test -n "${m_list}"
         if test "${m_image_name}.tar.xz.00" = "${m_list}"; then
-          mv "${m_image_name}.tar.xz.00" "${m_image_name}.tar.xz" && md5sum "${m_image_name}.tar.xz" # > "${m_image_name}.tar.xz.md5.txt"
+          mv "${m_image_name}.tar.xz.00" "${m_image_name}.tar.xz" && md5sum "${m_image_name}.tar.xz" > "${m_image_name}.tar.xz.md5.txt"
         else
-          echo "${m_list}" | xargs --delimiter="\n" md5sum # > "${m_image_name}.tar.xz.md5.txt"
+          echo "${m_list}" | xargs --delimiter="\n" md5sum > "${m_image_name}.tar.xz.md5.txt"
         fi
       )
       EOF
@@ -197,9 +197,9 @@ jobs:
         m_list=$((for m_file in "${m_image_name}.tar.xz."*; do echo "${m_file}"; done) | sed -rne '/^.{'"$(echo -n ${m_image_name} | wc -c)"'}+\.tar\.xz\.[0-9]{2}$/p')
         test -n "${m_list}"
         if test "${m_image_name}.tar.xz.00" = "${m_list}"; then
-          mv "${m_image_name}.tar.xz.00" "${m_image_name}.tar.xz" && md5sum "${m_image_name}.tar.xz" # > "${m_image_name}.tar.xz.md5.txt"
+          mv "${m_image_name}.tar.xz.00" "${m_image_name}.tar.xz" && md5sum "${m_image_name}.tar.xz" > "${m_image_name}.tar.xz.md5.txt"
         else
-          echo "${m_list}" | xargs --delimiter="\n" md5sum # > "${m_image_name}.tar.xz.md5.txt"
+          echo "${m_list}" | xargs --delimiter="\n" md5sum > "${m_image_name}.tar.xz.md5.txt"
         fi
       )
       EOF
