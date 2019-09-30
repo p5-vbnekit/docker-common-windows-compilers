@@ -98,7 +98,7 @@ jobs:
       "${m_python3_executable_path}" "${m_tools_directory_path}/download_released_image.py" "name: \"chocolatey.tar.xz\"" "release: { draft: \"${TRAVIS_TAG}\"}" "token: {env: \"DOWNLOAD_TOKEN\"}" | "${m_tools_directory_path}/xz.exe" --decompress --stdout --threads=0 | docker load
       docker build --tag "${m_image_name}" --file "${TRAVIS_BUILD_DIR}/${m_image_name}.Dockerfile" "/tmp/build/input"
       docker system prune --force
-      docker save "${m_image_name}" | "${m_tools_directory_path}/xz.exe" -3 --compress --stdout --threads=0 | split --numeric-suffixes --bytes=2GB - "/tmp/build/assets/${m_image_name}.tar.xz."
+      docker save "${m_image_name}" | "${m_tools_directory_path}/xz.exe" -1 --compress --stdout --threads=0 | split --numeric-suffixes --bytes=2GB - "/tmp/build/assets/${m_image_name}.tar.xz."
       docker rmi "${m_image_name}" "chocolatey"
       docker system prune --force
       (
@@ -143,7 +143,7 @@ jobs:
       "${m_python3_executable_path}" "${m_tools_directory_path}/download_released_image.py" "name: \"chocolatey.tar.xz\"" "release: { draft: \"${TRAVIS_TAG}\"}" "token: {env: \"DOWNLOAD_TOKEN\"}" | "${m_tools_directory_path}/xz.exe" --decompress --stdout --threads=0 | docker load
       docker build --tag "${m_image_name}" --file "${TRAVIS_BUILD_DIR}/${m_image_name}.Dockerfile" "/tmp/build/input"
       docker system prune --force
-      docker save "${m_image_name}" | "${m_tools_directory_path}/xz.exe" -3 --compress --stdout --threads=0 | split --numeric-suffixes --bytes=2GB - "/tmp/build/assets/${m_image_name}.tar.xz."
+      docker save "${m_image_name}" | "${m_tools_directory_path}/xz.exe" -1 --compress --stdout --threads=0 | split --numeric-suffixes --bytes=2GB - "/tmp/build/assets/${m_image_name}.tar.xz."
       docker rmi "${m_image_name}" "chocolatey"
       docker system prune --force
       (
@@ -188,7 +188,7 @@ jobs:
       "${m_python3_executable_path}" "${m_tools_directory_path}/download_released_image.py" "name: \"chocolatey.tar.xz\"" "release: { draft: \"${TRAVIS_TAG}\"}" "token: {env: \"DOWNLOAD_TOKEN\"}" | "${m_tools_directory_path}/xz.exe" --decompress --stdout --threads=0 | docker load
       docker build --tag "${m_image_name}" --file "${TRAVIS_BUILD_DIR}/${m_image_name}.Dockerfile" "/tmp/build/input"
       docker system prune --force
-      docker save "${m_image_name}" | "${m_tools_directory_path}/xz.exe" -3 --compress --stdout --threads=0 | split --numeric-suffixes --bytes=2GB - "/tmp/build/assets/${m_image_name}.tar.xz."
+      docker save "${m_image_name}" | "${m_tools_directory_path}/xz.exe" -1 --compress --stdout --threads=0 | split --numeric-suffixes --bytes=2GB - "/tmp/build/assets/${m_image_name}.tar.xz."
       docker rmi "${m_image_name}" "chocolatey"
       docker system prune --force
       (
