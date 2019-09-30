@@ -48,20 +48,20 @@ jobs:
     - "mkdir -p \"/tmp/build/output\" \"/tmp/build/assets\""
     - "export m_python3_executable_path=\"${m_python3_directory_path}/python.exe\""
     script: |
-      "${m_python3_executable_path}" "${m_tools_directory_path}/travis_wait_alternative.py" sh -e << EOF
+      "${m_python3_executable_path}" "${m_tools_directory_path}/work_around_travis_long_time_command.py" sh -e << EOF
       export PS4="executing command: "; set -xo pipefail
       docker build --tag "chocolatey" --file "${TRAVIS_BUILD_DIR}/chocolatey.Dockerfile" .
       docker system prune --force
-      docker save "chocolatey" | "${m_tools_directory_path}/xz.exe" -5 --compress --stdout --threads=0 | split --numeric-suffixes --bytes=2GB - "/tmp/build/assets/chocolatey.tar.xz."
+      docker save "chocolatey" | "${m_tools_directory_path}/xz.exe" -4 --compress --stdout --threads=0 | split --numeric-suffixes --bytes=2GB - "/tmp/build/assets/chocolatey.tar.xz."
       docker rmi "chocolatey"
       docker system prune --force
       (cd "/tmp/build/assets" && md5sum chocolatey.tar.xz.* > "chocolatey.tar.xz.md5.txt")
       EOF
     before_deploy:
-    - "\"${m_python3_executable_path}\" \"${m_tools_directory_path}/travis_deploy_stderr_ping.py\" & export m_travis_deploy_stderr_ping_pid=\"$!\""
+    - "\"${m_python3_executable_path}\" \"${m_tools_directory_path}/work_around_travis_long_time_deploy.py\" & export m_work_around_travis_long_time_deploy_pid=\"$!\""
     - "if test -z \"${TRAVIS_TAG}\"; then export TRAVIS_TAG=\"travis-${TRAVIS_COMMIT}\"; fi"
     - "cd \"/tmp/build/assets\""
-    after_deploy: "if test -n \"${m_travis_deploy_stderr_ping_pid}\"; then kill \"${m_travis_deploy_stderr_ping_pid}\" || true; fi"
+    after_deploy: "if test -n \"${m_work_around_travis_long_time_deploy_pid}\"; then kill \"${m_work_around_travis_long_time_deploy_pid}\" || true; fi"
 
   #- name: "chocolatey.tar.xz"
     #stage: "build-2"
@@ -78,11 +78,11 @@ jobs:
     #- "export m_tools_directory_path=\"${TRAVIS_BUILD_DIR}/tools\""
     #- "if test -z \"${TRAVIS_TAG}\"; then export TRAVIS_TAG=\"travis-${TRAVIS_COMMIT}\"; fi"
     #- "export TRAVIS_TAG=\"travis-21a57e91efc49d2cc0b7271dc50a5949f25b0c31\""
-    #script: "\"${m_python3_executable_path}\" \"${m_tools_directory_path}/travis_wait_alternative.py\" bash -e \"${m_tools_directory_path}/make_xz.bash\" \"chocolatey.tar\""
+    #script: "\"${m_python3_executable_path}\" \"${m_tools_directory_path}/work_around_travis_long_time_command.py\" bash -e \"${m_tools_directory_path}/make_xz.bash\" \"chocolatey.tar\""
     #before_deploy:
-    #- "\"${m_python3_executable_path}\" \"${m_tools_directory_path}/travis_deploy_stderr_ping.py\" & export m_travis_deploy_stderr_ping_pid=\"$!\""
+    #- "\"${m_python3_executable_path}\" \"${m_tools_directory_path}/work_around_travis_long_time_deploy.py\" & export m_work_around_travis_long_time_deploy_pid=\"$!\""
     #- "cd \"/tmp/build/assets\""
-    #after_deploy: "if test -n \"${m_travis_deploy_stderr_ping_pid}\"; then kill \"${m_travis_deploy_stderr_ping_pid}\" || true; fi"
+    #after_deploy: "if test -n \"${m_work_around_travis_long_time_deploy_pid}\"; then kill \"${m_work_around_travis_long_time_deploy_pid}\" || true; fi"
 
   - name: "msys2.tar.xz"
     stage: "build-2"
@@ -104,7 +104,7 @@ jobs:
     - "if test -z \"${TRAVIS_TAG}\"; then export TRAVIS_TAG=\"travis-${TRAVIS_COMMIT}\"; fi"
     # - "export TRAVIS_TAG=\"travis-21a57e91efc49d2cc0b7271dc50a5949f25b0c31\""
     script: |
-      "${m_python3_executable_path}" "${m_tools_directory_path}/travis_wait_alternative.py" sh -e << EOF
+      "${m_python3_executable_path}" "${m_tools_directory_path}/work_around_travis_long_time_command.py" sh -e << EOF
       export PS4="executing command: "; set -xo pipefail
       "${m_python3_executable_path}" "${m_tools_directory_path}/download_released_image.py" "name: \"chocolatey.tar.xz\"" "release: { draft: \"${TRAVIS_TAG}\"}" "token: {env: \"DOWNLOAD_TOKEN\"}" | "${m_tools_directory_path}/xz.exe" --decompress --stdout --threads=0 | docker load
       docker build --tag "msys2" --file "${TRAVIS_BUILD_DIR}/msys2.Dockerfile" .
@@ -115,9 +115,9 @@ jobs:
       (cd "/tmp/build/assets" && md5sum msys2.tar.xz.* > "msys2.tar.xz.md5.txt")
       EOF
     before_deploy:
-    - "\"${m_python3_executable_path}\" \"${m_tools_directory_path}/travis_deploy_stderr_ping.py\" & export m_travis_deploy_stderr_ping_pid=\"$!\""
+    - "\"${m_python3_executable_path}\" \"${m_tools_directory_path}/work_around_travis_long_time_deploy.py\" & export m_work_around_travis_long_time_deploy_pid=\"$!\""
     - "cd \"/tmp/build/assets\""
-    after_deploy: "if test -n \"${m_travis_deploy_stderr_ping_pid}\"; then kill \"${m_travis_deploy_stderr_ping_pid}\" || true; fi"
+    after_deploy: "if test -n \"${m_work_around_travis_long_time_deploy_pid}\"; then kill \"${m_work_around_travis_long_time_deploy_pid}\" || true; fi"
 
   #- name: "msys2.tar.xz"
     #stage: "build-3"
@@ -134,11 +134,11 @@ jobs:
     #- "export m_tools_directory_path=\"${TRAVIS_BUILD_DIR}/tools\""
     #- "if test -z \"${TRAVIS_TAG}\"; then export TRAVIS_TAG=\"travis-${TRAVIS_COMMIT}\"; fi"
     #- "export TRAVIS_TAG=\"travis-21a57e91efc49d2cc0b7271dc50a5949f25b0c31\""
-    #script: "\"${m_python3_executable_path}\" \"${m_tools_directory_path}/travis_wait_alternative.py\" bash -e \"${m_tools_directory_path}/make_xz.bash\" \"msys2.tar\""
+    #script: "\"${m_python3_executable_path}\" \"${m_tools_directory_path}/work_around_travis_long_time_command.py\" bash -e \"${m_tools_directory_path}/make_xz.bash\" \"msys2.tar\""
     #before_deploy:
-    #- "\"${m_python3_executable_path}\" \"${m_tools_directory_path}/travis_deploy_stderr_ping.py\" & export m_travis_deploy_stderr_ping_pid=\"$!\""
+    #- "\"${m_python3_executable_path}\" \"${m_tools_directory_path}/work_around_travis_long_time_deploy.py\" & export m_work_around_travis_long_time_deploy_pid=\"$!\""
     #- "cd \"/tmp/build/assets\""
-    #after_deploy: "if test -n \"${m_travis_deploy_stderr_ping_pid}\"; then kill \"${m_travis_deploy_stderr_ping_pid}\" || true; fi"
+    #after_deploy: "if test -n \"${m_work_around_travis_long_time_deploy_pid}\"; then kill \"${m_work_around_travis_long_time_deploy_pid}\" || true; fi"
 
   - name: "publish"
     stage: "publish"
