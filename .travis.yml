@@ -53,7 +53,7 @@ jobs:
       export PS4="executing command: "; set -xo pipefail
       docker build --tag "chocolatey" --file "${TRAVIS_BUILD_DIR}/chocolatey.Dockerfile" .
       docker system prune --force
-      docker save "chocolatey" | "${m_tools_directory_path}/xz.exe -1 --compress --extreme --stdout --threads=0 | split --numeric-suffixes --bytes=2GB - "/tmp/build/assets/chocolatey.tar.xz."
+      docker save "chocolatey" | "${m_tools_directory_path}/xz.exe" -1 --compress --extreme --stdout --threads=0 | split --numeric-suffixes --bytes=2GB - "/tmp/build/assets/chocolatey.tar.xz."
       docker rmi "chocolatey"
       docker system prune --force
       (cd "/tmp/build/assets" && md5sum chocolatey.tar.xz.* > "chocolatey.tar.xz.md5.txt")
