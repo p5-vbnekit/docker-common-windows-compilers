@@ -13,7 +13,8 @@ Just download all parts of the current image and call something like: `cat ${IMA
 Also you can use [this script (tools/download_released_image.py)](tools/download_released_image.py): `python3 tools/dowload_released_image.py "name: ${IMAGE}.tar.xz" | xz --decompress --stdout | docker load`
 ## Images
 ### chocolatey
-Based on ["mcr.microsoft.com/windows/servercore:1803" image](https://hub.docker.com/_/microsoft-windows-servercore) with ["chocolatey" package manager](https://chocolatey.org).
+Based on ["mcr.microsoft.com/windows/servercore:1803" image](https://hub.docker.com/_/microsoft-windows-servercore).</br>
+Added ["chocolatey" package manager](https://chocolatey.org).
 ### msys2
 Based on ["chocolatey"](#chocolatey) image.<br/>
 Added ["msys2" chocolatey package](https://chocolatey.org/packages/msys2) with:
