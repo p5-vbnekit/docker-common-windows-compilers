@@ -24,7 +24,7 @@ if "__main__" == __name__:
   m_context = make_context()
 
   def thread_routine():
-    m_message_template = "{}: this message had to be sent, otherwise travis-ci will stop the job by 10 minutes timeout, child process stderr is already silent for {} minutes, total time elapsed: {} minutes..."
+    m_message_template = "{}: this message had to be sent, otherwise travis-ci will stop the job by 10 minutes timeout, child process stderr is already silent for {} minutes, time elapsed: {} minutes..."
     with m_context.event:
       def wait_barrier(current_time_point):
         m_duration = m_context.barrier_time_point - current_time_point
@@ -37,7 +37,7 @@ if "__main__" == __name__:
         m_context.barrier_time_point = m_current_time_point + m_context.wait_duration
         print(m_message_template.format(m_main_path, (m_current_time_point - m_context.last_time_point) / +6.0e+1, (m_current_time_point - m_context.initial_time_point) / +6.0e+1), file = sys.stderr)
         sys.stderr.flush()
-      print("{}: total time elapsed {} minutes, exiting...".format(m_main_path, (time.monotonic() - m_context.initial_time_point) / +6.0e+1), file = sys.stderr)
+      print("{}: time elapsed {} minutes, exiting...".format(m_main_path, (time.monotonic() - m_context.initial_time_point) / +6.0e+1), file = sys.stderr)
       sys.stderr.flush()
 
   m_command = sys.argv[1:]
