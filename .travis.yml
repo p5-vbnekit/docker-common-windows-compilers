@@ -25,8 +25,8 @@ jobs:
   - name: "prepare"
     stage: "prepare"
     script: "true"
-    # before_deploy: "if test -z \"${TRAVIS_TAG}\"; then export TRAVIS_TAG=\"travis-${TRAVIS_COMMIT}\"; fi"
-    before_deploy: "export TRAVIS_TAG=\"travis-21a57e91efc49d2cc0b7271dc50a5949f25b0c31\""
+    before_deploy: "if test -z \"${TRAVIS_TAG}\"; then export TRAVIS_TAG=\"travis-${TRAVIS_COMMIT}\"; fi"
+    # before_deploy: "export TRAVIS_TAG=\"travis-21a57e91efc49d2cc0b7271dc50a5949f25b0c31\""
     deploy:
       file:
       file_glob: false
@@ -36,7 +36,7 @@ jobs:
       draft: true
       api_key: { secure: "Ju101V+iAkFznYiyyDKpm7rgo5LvQ5+xk0vvvqujSv+/V+sA4fV3gM2w+NLDc1itI1RF2VEbLbcfP43KcugXk1HeQIlOKgrajZ74uistaRIOvfMWAp7RKw2QdMDGCP9D+5ZSwfzP+NfafG/p1W2uBWm7CqFBiJTX+z43Zf5R0CrxLIgIqr0K6qlGacPCpXDQdIFHvWhKrF6nKCS5HzuSLB5C3VPU83m70PT1/Cpj73S3J8Cp54ARRFTsLAx43xDRxMDFjFDE/vnM1DgVb2oqOaJSKV+O5DC/diL9Dkgu82uzqeHymUzU+XA0M51Ez6VDO4pvURYkBZ170t0yxdC+kDox+az47TLvZu7Zyqu1AbothxMmOpPD0l7RTVNvnLKd/kcyZK+psuqs6rNbnUxs2kR5M0/LUM0hf2THW9ZnX8wFz+JLv17L4TBC+pKIFpx/f9a6EXFw7IRCSLOJ+sJGf7pWHTHYUTJ1vn8RwHz80u2s8NwC53w/sTBGMuVFyUofqKRyJ3b6hTjY4QIiHgYqjVHSck8FViQoXfQOxbbJIYj+O80WiALf9Olty7GJ1qXvOwp5fKxtUr+m8i5QWcN9nasXas+altHNSoXnRWOhPPEZvpUhwrjlTArFojwsgjHwyubegCc07o6X4QbQAlX2+MfCSWY+Q9q+fagOQm361rI=" }
 
-  - name: "chocolatey.tar"
+  - name: "chocolatey.tar.xz"
     stage: "build-1"
     os: "windows"
     language: "cpp"
@@ -50,98 +50,97 @@ jobs:
     - "export m_python3_executable_path=\"${m_python3_directory_path}/python.exe\""
     script: |
       "${m_python3_executable_path}" "${m_tools_directory_path}/travis_wait_alternative.py" sh -e << EOF
-      exit 0
       export PS4="executing command: "; set -xo pipefail
       docker build --tag "chocolatey" --file "${TRAVIS_BUILD_DIR}/chocolatey.Dockerfile" .
       docker system prune --force
-      docker save "chocolatey" | split --numeric-suffixes --bytes=2GB - "/tmp/build/assets/chocolatey.tar."
+      docker save "chocolatey" | "${m_tools_directory_path}/xz.exe -1 --compress --extreme --stdout --threads=0 | split --numeric-suffixes --bytes=2GB - "/tmp/build/assets/chocolatey.tar.xz."
       docker rmi "chocolatey"
       docker system prune --force
-      (cd "/tmp/build/assets" && md5sum chocolatey.tar.* > "chocolatey.tar.md5.txt")
+      (cd "/tmp/build/assets" && md5sum chocolatey.tar.xz.* > "chocolatey.tar.xz.md5.txt")
       EOF
     before_deploy:
     - "\"${m_python3_executable_path}\" \"${m_tools_directory_path}/travis_deploy_stderr_ping.py\" & export m_travis_deploy_stderr_ping_pid=\"$!\""
     - "if test -z \"${TRAVIS_TAG}\"; then export TRAVIS_TAG=\"travis-${TRAVIS_COMMIT}\"; fi"
-    - "export TRAVIS_TAG=\"travis-21a57e91efc49d2cc0b7271dc50a5949f25b0c31\""
+    # - "export TRAVIS_TAG=\"travis-21a57e91efc49d2cc0b7271dc50a5949f25b0c31\""
     - "cd \"/tmp/build/assets\""
     after_deploy: "if test -n \"${m_travis_deploy_stderr_ping_pid}\"; then kill \"${m_travis_deploy_stderr_ping_pid}\" || true; fi"
 
-  - name: "chocolatey.tar.xz"
-    stage: "build-2"
-    env: { secure: "WjfnxHX3BTNCVzmE/hAILv8NwVT0MbuUDG8FhvVY7VscDMd3ow4+ZtCaDT5a4Sba/o1WGpp7Q3kSh4+fnSHVpZGIe/k4JZ2nOhLukWdNLl8FKAku+9rriVZDe11o1tANhUDMDF3ala+aJ7ETO4Ocg2rc9BKQBTcF58rpf1m/Hx8sy3aVBwcvHJwNvu/I1Nir7eDpUT8yrTH14e4r+K+HvfjlmAB6pc/FuufdfOzu9uXwj9d7O2Ay9xuI1p6KwNPDhddaH4oWuPLFLjw9U2YX34sf5r3OYhE43YNAzyN+lNp2QhTJVvgG8JkURW9zp/gU76MI+cI/iOjaj6uRzD0q/F8kBHM2tWGTOdOYxolRhbMcdAkZ7iTBUEPKFW6jmenWf102xp4WKQNsDhXnzooAMLSrkKHmDpHCEL3pPFzbLkFl46Oio5Ze/+qbbQvq3Zk9dv7HeNd+0441Q5PCZqD6Z4RjrwVK7aC0l4lwgOjCHBJrK+EDk2Ab/2Vsja7pyQcLBOMQ+Gdvct0uDAE/94H1ETpurgDQ08397iufREpj9c+35u/BP6XygnjvBnYXf8GBAs7MVCo0O6uZuARtj6geVn7SiIhbkF8Tv2bycv1meB59b0L66Gc7xHRAdyQrVbcuAxKHz75Qfi5lPb4BTBqBymrfsSEcwlbx5J8ncqS44GU=" }
-    install:
-    - "sudo rm -rf ~/.cache && mkdir ~/.cache"
-    - "sudo su -c 'apt update && apt install -y python3-github python3-yaml python3-pip python3-setuptools python3'"
-    - "sudo su -c 'apt autoremove -y && apt clean -y'"
-    - "export m_python3_executable_path=\"$(which python3)\""
-    - "sudo \"${m_python3_executable_path}\" -m \"pip\" install --upgrade \"pip\""
-    - "sudo \"${m_python3_executable_path}\" -m \"pip\" install --upgrade \"PyGithub\""
-    before_script:
-    - "mkdir -p \"/tmp/build/output\" \"/tmp/build/assets\""
-    - "export m_tools_directory_path=\"${TRAVIS_BUILD_DIR}/tools\""
-    - "if test -z \"${TRAVIS_TAG}\"; then export TRAVIS_TAG=\"travis-${TRAVIS_COMMIT}\"; fi"
-    - "export TRAVIS_TAG=\"travis-21a57e91efc49d2cc0b7271dc50a5949f25b0c31\""
-    script: "\"${m_python3_executable_path}\" \"${m_tools_directory_path}/travis_wait_alternative.py\" bash -e \"${m_tools_directory_path}/make_xz.bash\" \"chocolatey.tar\""
-    before_deploy:
-    - "\"${m_python3_executable_path}\" \"${m_tools_directory_path}/travis_deploy_stderr_ping.py\" & export m_travis_deploy_stderr_ping_pid=\"$!\""
-    - "cd \"/tmp/build/assets\""
-    after_deploy: "if test -n \"${m_travis_deploy_stderr_ping_pid}\"; then kill \"${m_travis_deploy_stderr_ping_pid}\" || true; fi"
+  #- name: "chocolatey.tar.xz"
+    #stage: "build-2"
+    #env: { secure: "WjfnxHX3BTNCVzmE/hAILv8NwVT0MbuUDG8FhvVY7VscDMd3ow4+ZtCaDT5a4Sba/o1WGpp7Q3kSh4+fnSHVpZGIe/k4JZ2nOhLukWdNLl8FKAku+9rriVZDe11o1tANhUDMDF3ala+aJ7ETO4Ocg2rc9BKQBTcF58rpf1m/Hx8sy3aVBwcvHJwNvu/I1Nir7eDpUT8yrTH14e4r+K+HvfjlmAB6pc/FuufdfOzu9uXwj9d7O2Ay9xuI1p6KwNPDhddaH4oWuPLFLjw9U2YX34sf5r3OYhE43YNAzyN+lNp2QhTJVvgG8JkURW9zp/gU76MI+cI/iOjaj6uRzD0q/F8kBHM2tWGTOdOYxolRhbMcdAkZ7iTBUEPKFW6jmenWf102xp4WKQNsDhXnzooAMLSrkKHmDpHCEL3pPFzbLkFl46Oio5Ze/+qbbQvq3Zk9dv7HeNd+0441Q5PCZqD6Z4RjrwVK7aC0l4lwgOjCHBJrK+EDk2Ab/2Vsja7pyQcLBOMQ+Gdvct0uDAE/94H1ETpurgDQ08397iufREpj9c+35u/BP6XygnjvBnYXf8GBAs7MVCo0O6uZuARtj6geVn7SiIhbkF8Tv2bycv1meB59b0L66Gc7xHRAdyQrVbcuAxKHz75Qfi5lPb4BTBqBymrfsSEcwlbx5J8ncqS44GU=" }
+    #install:
+    #- "sudo rm -rf ~/.cache && mkdir ~/.cache"
+    #- "sudo su -c 'apt update && apt install -y python3-github python3-yaml python3-pip python3-setuptools python3'"
+    #- "sudo su -c 'apt autoremove -y && apt clean -y'"
+    #- "export m_python3_executable_path=\"$(which python3)\""
+    #- "sudo \"${m_python3_executable_path}\" -m \"pip\" install --upgrade \"pip\""
+    #- "sudo \"${m_python3_executable_path}\" -m \"pip\" install --upgrade \"PyGithub\""
+    #before_script:
+    #- "mkdir -p \"/tmp/build/output\" \"/tmp/build/assets\""
+    #- "export m_tools_directory_path=\"${TRAVIS_BUILD_DIR}/tools\""
+    #- "if test -z \"${TRAVIS_TAG}\"; then export TRAVIS_TAG=\"travis-${TRAVIS_COMMIT}\"; fi"
+    #- "export TRAVIS_TAG=\"travis-21a57e91efc49d2cc0b7271dc50a5949f25b0c31\""
+    #script: "\"${m_python3_executable_path}\" \"${m_tools_directory_path}/travis_wait_alternative.py\" bash -e \"${m_tools_directory_path}/make_xz.bash\" \"chocolatey.tar\""
+    #before_deploy:
+    #- "\"${m_python3_executable_path}\" \"${m_tools_directory_path}/travis_deploy_stderr_ping.py\" & export m_travis_deploy_stderr_ping_pid=\"$!\""
+    #- "cd \"/tmp/build/assets\""
+    #after_deploy: "if test -n \"${m_travis_deploy_stderr_ping_pid}\"; then kill \"${m_travis_deploy_stderr_ping_pid}\" || true; fi"
 
-  - name: "msys2.tar"
-    stage: "build-2"
-    env: { secure: "WjfnxHX3BTNCVzmE/hAILv8NwVT0MbuUDG8FhvVY7VscDMd3ow4+ZtCaDT5a4Sba/o1WGpp7Q3kSh4+fnSHVpZGIe/k4JZ2nOhLukWdNLl8FKAku+9rriVZDe11o1tANhUDMDF3ala+aJ7ETO4Ocg2rc9BKQBTcF58rpf1m/Hx8sy3aVBwcvHJwNvu/I1Nir7eDpUT8yrTH14e4r+K+HvfjlmAB6pc/FuufdfOzu9uXwj9d7O2Ay9xuI1p6KwNPDhddaH4oWuPLFLjw9U2YX34sf5r3OYhE43YNAzyN+lNp2QhTJVvgG8JkURW9zp/gU76MI+cI/iOjaj6uRzD0q/F8kBHM2tWGTOdOYxolRhbMcdAkZ7iTBUEPKFW6jmenWf102xp4WKQNsDhXnzooAMLSrkKHmDpHCEL3pPFzbLkFl46Oio5Ze/+qbbQvq3Zk9dv7HeNd+0441Q5PCZqD6Z4RjrwVK7aC0l4lwgOjCHBJrK+EDk2Ab/2Vsja7pyQcLBOMQ+Gdvct0uDAE/94H1ETpurgDQ08397iufREpj9c+35u/BP6XygnjvBnYXf8GBAs7MVCo0O6uZuARtj6geVn7SiIhbkF8Tv2bycv1meB59b0L66Gc7xHRAdyQrVbcuAxKHz75Qfi5lPb4BTBqBymrfsSEcwlbx5J8ncqS44GU=" }
-    os: "windows"
-    language: "cpp"
-    services: "docker"
-    before_install:
-    - "m_python3_directory_path=\"/tmp/build/python3\""
-    - "export m_tools_directory_path=\"${TRAVIS_BUILD_DIR}/tools\""
-    install:
-    - "sh -e \"${m_tools_directory_path}/choco_install_python3.sh\" \"${m_python3_directory_path}\""
-    - "export m_python3_executable_path=\"${m_python3_directory_path}/python.exe\""
-    - "\"${m_python3_executable_path}\" -m \"pip\" install --upgrade \"pip\""
-    - "\"${m_python3_executable_path}\" -m \"pip\" install --upgrade \"PyGithub\" \"PyYAML\""
-    before_script:
-    - "mkdir -p \"/tmp/build/output\" \"/tmp/build/assets\""
-    - "export m_tools_directory_path=\"${TRAVIS_BUILD_DIR}/tools\""
-    - "if test -z \"${TRAVIS_TAG}\"; then export TRAVIS_TAG=\"travis-${TRAVIS_COMMIT}\"; fi"
-    - "export TRAVIS_TAG=\"travis-21a57e91efc49d2cc0b7271dc50a5949f25b0c31\""
-    script: |
-      "${m_python3_executable_path}" "${m_tools_directory_path}/travis_wait_alternative.py" sh -e << EOF
-      export PS4="executing command: "; set -xo pipefail
-      "${m_python3_executable_path}" "${m_tools_directory_path}/download_released_image.py" "name: \"chocolatey.tar\"" "release: { draft: \"${TRAVIS_TAG}\"}" "token: {env: \"DOWNLOAD_TOKEN\"}" | docker load
-      docker build --tag "msys2" --file "${TRAVIS_BUILD_DIR}/msys2.Dockerfile" .
-      docker system prune --force
-      docker save "msys2" | split --numeric-suffixes --bytes=2GB - "/tmp/build/assets/msys2.tar."
-      docker rmi "msys2" "chocolatey"
-      docker system prune --force
-      (cd "/tmp/build/assets" && md5sum msys2.tar.* > "msys2.tar.md5.txt")
-      EOF
-    before_deploy:
-    - "\"${m_python3_executable_path}\" \"${m_tools_directory_path}/travis_deploy_stderr_ping.py\" & export m_travis_deploy_stderr_ping_pid=\"$!\""
-    - "cd \"/tmp/build/assets\""
-    after_deploy: "if test -n \"${m_travis_deploy_stderr_ping_pid}\"; then kill \"${m_travis_deploy_stderr_ping_pid}\" || true; fi"
+  #- name: "msys2.tar"
+    #stage: "build-2"
+    #env: { secure: "WjfnxHX3BTNCVzmE/hAILv8NwVT0MbuUDG8FhvVY7VscDMd3ow4+ZtCaDT5a4Sba/o1WGpp7Q3kSh4+fnSHVpZGIe/k4JZ2nOhLukWdNLl8FKAku+9rriVZDe11o1tANhUDMDF3ala+aJ7ETO4Ocg2rc9BKQBTcF58rpf1m/Hx8sy3aVBwcvHJwNvu/I1Nir7eDpUT8yrTH14e4r+K+HvfjlmAB6pc/FuufdfOzu9uXwj9d7O2Ay9xuI1p6KwNPDhddaH4oWuPLFLjw9U2YX34sf5r3OYhE43YNAzyN+lNp2QhTJVvgG8JkURW9zp/gU76MI+cI/iOjaj6uRzD0q/F8kBHM2tWGTOdOYxolRhbMcdAkZ7iTBUEPKFW6jmenWf102xp4WKQNsDhXnzooAMLSrkKHmDpHCEL3pPFzbLkFl46Oio5Ze/+qbbQvq3Zk9dv7HeNd+0441Q5PCZqD6Z4RjrwVK7aC0l4lwgOjCHBJrK+EDk2Ab/2Vsja7pyQcLBOMQ+Gdvct0uDAE/94H1ETpurgDQ08397iufREpj9c+35u/BP6XygnjvBnYXf8GBAs7MVCo0O6uZuARtj6geVn7SiIhbkF8Tv2bycv1meB59b0L66Gc7xHRAdyQrVbcuAxKHz75Qfi5lPb4BTBqBymrfsSEcwlbx5J8ncqS44GU=" }
+    #os: "windows"
+    #language: "cpp"
+    #services: "docker"
+    #before_install:
+    #- "m_python3_directory_path=\"/tmp/build/python3\""
+    #- "export m_tools_directory_path=\"${TRAVIS_BUILD_DIR}/tools\""
+    #install:
+    #- "sh -e \"${m_tools_directory_path}/choco_install_python3.sh\" \"${m_python3_directory_path}\""
+    #- "export m_python3_executable_path=\"${m_python3_directory_path}/python.exe\""
+    #- "\"${m_python3_executable_path}\" -m \"pip\" install --upgrade \"pip\""
+    #- "\"${m_python3_executable_path}\" -m \"pip\" install --upgrade \"PyGithub\" \"PyYAML\""
+    #before_script:
+    #- "mkdir -p \"/tmp/build/output\" \"/tmp/build/assets\""
+    #- "export m_tools_directory_path=\"${TRAVIS_BUILD_DIR}/tools\""
+    #- "if test -z \"${TRAVIS_TAG}\"; then export TRAVIS_TAG=\"travis-${TRAVIS_COMMIT}\"; fi"
+    #- "export TRAVIS_TAG=\"travis-21a57e91efc49d2cc0b7271dc50a5949f25b0c31\""
+    #script: |
+      #"${m_python3_executable_path}" "${m_tools_directory_path}/travis_wait_alternative.py" sh -e << EOF
+      #export PS4="executing command: "; set -xo pipefail
+      #"${m_python3_executable_path}" "${m_tools_directory_path}/download_released_image.py" "name: \"chocolatey.tar\"" "release: { draft: \"${TRAVIS_TAG}\"}" "token: {env: \"DOWNLOAD_TOKEN\"}" | docker load
+      #docker build --tag "msys2" --file "${TRAVIS_BUILD_DIR}/msys2.Dockerfile" .
+      #docker system prune --force
+      #docker save "msys2" | split --numeric-suffixes --bytes=2GB - "/tmp/build/assets/msys2.tar."
+      #docker rmi "msys2" "chocolatey"
+      #docker system prune --force
+      #(cd "/tmp/build/assets" && md5sum msys2.tar.* > "msys2.tar.md5.txt")
+      #EOF
+    #before_deploy:
+    #- "\"${m_python3_executable_path}\" \"${m_tools_directory_path}/travis_deploy_stderr_ping.py\" & export m_travis_deploy_stderr_ping_pid=\"$!\""
+    #- "cd \"/tmp/build/assets\""
+    #after_deploy: "if test -n \"${m_travis_deploy_stderr_ping_pid}\"; then kill \"${m_travis_deploy_stderr_ping_pid}\" || true; fi"
 
-  - name: "msys2.tar.xz"
-    stage: "build-3"
-    env: { secure: "WjfnxHX3BTNCVzmE/hAILv8NwVT0MbuUDG8FhvVY7VscDMd3ow4+ZtCaDT5a4Sba/o1WGpp7Q3kSh4+fnSHVpZGIe/k4JZ2nOhLukWdNLl8FKAku+9rriVZDe11o1tANhUDMDF3ala+aJ7ETO4Ocg2rc9BKQBTcF58rpf1m/Hx8sy3aVBwcvHJwNvu/I1Nir7eDpUT8yrTH14e4r+K+HvfjlmAB6pc/FuufdfOzu9uXwj9d7O2Ay9xuI1p6KwNPDhddaH4oWuPLFLjw9U2YX34sf5r3OYhE43YNAzyN+lNp2QhTJVvgG8JkURW9zp/gU76MI+cI/iOjaj6uRzD0q/F8kBHM2tWGTOdOYxolRhbMcdAkZ7iTBUEPKFW6jmenWf102xp4WKQNsDhXnzooAMLSrkKHmDpHCEL3pPFzbLkFl46Oio5Ze/+qbbQvq3Zk9dv7HeNd+0441Q5PCZqD6Z4RjrwVK7aC0l4lwgOjCHBJrK+EDk2Ab/2Vsja7pyQcLBOMQ+Gdvct0uDAE/94H1ETpurgDQ08397iufREpj9c+35u/BP6XygnjvBnYXf8GBAs7MVCo0O6uZuARtj6geVn7SiIhbkF8Tv2bycv1meB59b0L66Gc7xHRAdyQrVbcuAxKHz75Qfi5lPb4BTBqBymrfsSEcwlbx5J8ncqS44GU=" }
-    install:
-    - "sudo rm -rf ~/.cache && mkdir ~/.cache"
-    - "sudo su -c 'apt update && apt install -y python3-github python3-yaml python3-pip python3-setuptools python3'"
-    - "sudo su -c 'apt autoremove -y && apt clean -y'"
-    - "export m_python3_executable_path=\"$(which python3)\""
-    - "sudo \"${m_python3_executable_path}\" -m \"pip\" install --upgrade \"pip\""
-    - "sudo \"${m_python3_executable_path}\" -m \"pip\" install --upgrade \"PyGithub\""
-    before_script:
-    - "mkdir -p \"/tmp/build/output\" \"/tmp/build/assets\""
-    - "export m_tools_directory_path=\"${TRAVIS_BUILD_DIR}/tools\""
-    - "if test -z \"${TRAVIS_TAG}\"; then export TRAVIS_TAG=\"travis-${TRAVIS_COMMIT}\"; fi"
-    - "export TRAVIS_TAG=\"travis-21a57e91efc49d2cc0b7271dc50a5949f25b0c31\""
-    script: "\"${m_python3_executable_path}\" \"${m_tools_directory_path}/travis_wait_alternative.py\" bash -e \"${m_tools_directory_path}/make_xz.bash\" \"msys2.tar\""
-    before_deploy:
-    - "\"${m_python3_executable_path}\" \"${m_tools_directory_path}/travis_deploy_stderr_ping.py\" & export m_travis_deploy_stderr_ping_pid=\"$!\""
-    - "cd \"/tmp/build/assets\""
-    after_deploy: "if test -n \"${m_travis_deploy_stderr_ping_pid}\"; then kill \"${m_travis_deploy_stderr_ping_pid}\" || true; fi"
+  #- name: "msys2.tar.xz"
+    #stage: "build-3"
+    #env: { secure: "WjfnxHX3BTNCVzmE/hAILv8NwVT0MbuUDG8FhvVY7VscDMd3ow4+ZtCaDT5a4Sba/o1WGpp7Q3kSh4+fnSHVpZGIe/k4JZ2nOhLukWdNLl8FKAku+9rriVZDe11o1tANhUDMDF3ala+aJ7ETO4Ocg2rc9BKQBTcF58rpf1m/Hx8sy3aVBwcvHJwNvu/I1Nir7eDpUT8yrTH14e4r+K+HvfjlmAB6pc/FuufdfOzu9uXwj9d7O2Ay9xuI1p6KwNPDhddaH4oWuPLFLjw9U2YX34sf5r3OYhE43YNAzyN+lNp2QhTJVvgG8JkURW9zp/gU76MI+cI/iOjaj6uRzD0q/F8kBHM2tWGTOdOYxolRhbMcdAkZ7iTBUEPKFW6jmenWf102xp4WKQNsDhXnzooAMLSrkKHmDpHCEL3pPFzbLkFl46Oio5Ze/+qbbQvq3Zk9dv7HeNd+0441Q5PCZqD6Z4RjrwVK7aC0l4lwgOjCHBJrK+EDk2Ab/2Vsja7pyQcLBOMQ+Gdvct0uDAE/94H1ETpurgDQ08397iufREpj9c+35u/BP6XygnjvBnYXf8GBAs7MVCo0O6uZuARtj6geVn7SiIhbkF8Tv2bycv1meB59b0L66Gc7xHRAdyQrVbcuAxKHz75Qfi5lPb4BTBqBymrfsSEcwlbx5J8ncqS44GU=" }
+    #install:
+    #- "sudo rm -rf ~/.cache && mkdir ~/.cache"
+    #- "sudo su -c 'apt update && apt install -y python3-github python3-yaml python3-pip python3-setuptools python3'"
+    #- "sudo su -c 'apt autoremove -y && apt clean -y'"
+    #- "export m_python3_executable_path=\"$(which python3)\""
+    #- "sudo \"${m_python3_executable_path}\" -m \"pip\" install --upgrade \"pip\""
+    #- "sudo \"${m_python3_executable_path}\" -m \"pip\" install --upgrade \"PyGithub\""
+    #before_script:
+    #- "mkdir -p \"/tmp/build/output\" \"/tmp/build/assets\""
+    #- "export m_tools_directory_path=\"${TRAVIS_BUILD_DIR}/tools\""
+    #- "if test -z \"${TRAVIS_TAG}\"; then export TRAVIS_TAG=\"travis-${TRAVIS_COMMIT}\"; fi"
+    #- "export TRAVIS_TAG=\"travis-21a57e91efc49d2cc0b7271dc50a5949f25b0c31\""
+    #script: "\"${m_python3_executable_path}\" \"${m_tools_directory_path}/travis_wait_alternative.py\" bash -e \"${m_tools_directory_path}/make_xz.bash\" \"msys2.tar\""
+    #before_deploy:
+    #- "\"${m_python3_executable_path}\" \"${m_tools_directory_path}/travis_deploy_stderr_ping.py\" & export m_travis_deploy_stderr_ping_pid=\"$!\""
+    #- "cd \"/tmp/build/assets\""
+    #after_deploy: "if test -n \"${m_travis_deploy_stderr_ping_pid}\"; then kill \"${m_travis_deploy_stderr_ping_pid}\" || true; fi"
 
   - name: "publish"
     stage: "publish"
