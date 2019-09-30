@@ -26,7 +26,6 @@ jobs:
     stage: "prepare"
     script: "true"
     before_deploy: "if test -z \"${TRAVIS_TAG}\"; then export TRAVIS_TAG=\"travis-${TRAVIS_COMMIT}\"; fi"
-    # before_deploy: "export TRAVIS_TAG=\"travis-21a57e91efc49d2cc0b7271dc50a5949f25b0c31\""
     deploy:
       file:
       file_glob: false
@@ -50,7 +49,6 @@ jobs:
     - "export m_python3_executable_path=\"${m_python3_directory_path}/python.exe\""
     script: |
       "${m_python3_executable_path}" "${m_tools_directory_path}/travis_wait_alternative.py" sh -e << EOF
-      exit 0
       export PS4="executing command: "; set -xo pipefail
       docker build --tag "chocolatey" --file "${TRAVIS_BUILD_DIR}/chocolatey.Dockerfile" .
       docker system prune --force
@@ -62,7 +60,6 @@ jobs:
     before_deploy:
     - "\"${m_python3_executable_path}\" \"${m_tools_directory_path}/travis_deploy_stderr_ping.py\" & export m_travis_deploy_stderr_ping_pid=\"$!\""
     - "if test -z \"${TRAVIS_TAG}\"; then export TRAVIS_TAG=\"travis-${TRAVIS_COMMIT}\"; fi"
-    # - "export TRAVIS_TAG=\"travis-21a57e91efc49d2cc0b7271dc50a5949f25b0c31\""
     - "cd \"/tmp/build/assets\""
     after_deploy: "if test -n \"${m_travis_deploy_stderr_ping_pid}\"; then kill \"${m_travis_deploy_stderr_ping_pid}\" || true; fi"
 
