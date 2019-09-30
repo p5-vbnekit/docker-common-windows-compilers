@@ -5,7 +5,7 @@
 arguments: [yaml-dict-style options]
 
 yaml-dict-style options string:
-  name: string, image file name; None or False or empty string for default; default is "chocolatey.tar"
+  name: string, image file name; None or False or empty string for default; default is "chocolatey.tar.xz"
   repo: string; None or False or empty string for default; default is "p5-vbnekit/docker-common-windows-compilers"
   release: string; None or False or empty string for default; default is latest
   token: string; can be None or False
@@ -24,7 +24,7 @@ def routine():
       def __init__(self, name = None, repo = None, release = None, token = None, output = None, verbose = None, buffer_size = None):
         super().__init__()
 
-        m_default_name = "chocolatey.tar"
+        m_default_name = "chocolatey.tar.xz"
         m_default_repo = "p5-vbnekit/docker-common-windows-compilers"
         m_default_release = { "draft": False, "name": None }
         m_default_token = None
@@ -47,7 +47,7 @@ def routine():
           if not (0 < len(self.__repo)): self.__repo = m_default_repo
 
         self.__release = release
-        if self.__release is None: m_default_release
+        if self.__release is None: self.__release = m_default_release
         elif self.__release is False: self.__release = m_default_release
         elif isinstance(self.__release, dict):
           def make_release():
