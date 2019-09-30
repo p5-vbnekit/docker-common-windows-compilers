@@ -10,3 +10,5 @@ if "__main__" == __name__:
     time.sleep(+2.0e+2)
     print("{}: this message had to be sent, otherwise travis-ci will stop the the deployment of large files by 10 minutes timeout, total time elapsed: {} minutes...".format(m_main_path, (time.monotonic() - m_begin) / +6.0e+1), file = sys.stderr)
     sys.stderr.flush()
+  print("{}: total time elapsed: {} minutes, exiting...".format(m_main_path, (time.monotonic() - m_begin) / +6.0e+1), file = sys.stderr)
+  sys.stderr.flush()
