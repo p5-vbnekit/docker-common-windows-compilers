@@ -15,11 +15,11 @@ Also you can use [this script (tools/download_released_image.py)](tools/download
 ### chocolatey
 Based on ["mcr.microsoft.com/windows/servercore:1803" image](https://hub.docker.com/_/microsoft-windows-servercore) with ["chocolatey" package manager](https://chocolatey.org).
 ### msys2
-Based on "chocolatey" image.<br/>
+Based on ["chocolatey"](#chocolatey) image.<br/>
 Added ["msys2" chocolatey package](https://chocolatey.org/packages/msys2) with:
 - mingw32/mingw-w64-i686-gcc
 - mingw64/mingw-w64-x86_64-gcc
 ### visualstudio2017community
-Based on "chocolatey" image with ["Visual Studio 2017 Community" chocolatey package](https://chocolatey.org/packages/VisualStudio2017Community).
+Based on ["chocolatey"](#chocolatey) image with ["Visual Studio 2017 Community" chocolatey package](https://chocolatey.org/packages/VisualStudio2017Community).
 ### visualstudio2019community
-Based on "chocolatey" image with ["Visual Studio 2019 Community" chocolatey package](https://chocolatey.org/packages/VisualStudio2019Community).
+Based on ["chocolatey"](#chocolatey) image with ["Visual Studio 2019 Community" chocolatey package](https://chocolatey.org/packages/VisualStudio2019Community).
