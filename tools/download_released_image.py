@@ -327,12 +327,8 @@ def routine():
       def routine(try_number):
         with make_input() as m_input:
           def routine():
-            try: m_size = m_input.readinto(m_buffer)
-            except (OSError):
-              if not (3 > try_number): raise
-              traceback.print_exc(file = sys.stderr)
-              return False
             try:
+              m_size = m_input.readinto(m_buffer)
               if not (0 < m_size): raise RuntimeError("unexpected EOF")
               m_expected = min(m_asset.size - m_context.offset, m_buffer_length)
               if not (m_size <= m_expected): raise OverflowError("unexpected data")
