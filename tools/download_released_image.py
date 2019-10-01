@@ -221,7 +221,7 @@ def routine():
   m_assets = make_assets()
 
   def make_md5():
-    m_txt = "{}.md5.txt"
+    m_asset_name = "{}.md5.txt".format(m_options.name)
     class Record(object):
       __digest_pattern = re.compile("^[0-9a-f]{32}$")
       __spacer_pattern = re.compile("^ [\\* ]$")
@@ -236,11 +236,23 @@ def routine():
         if self.__spacer_pattern.match(m_line[32:34]) is None: raise ValueError("invalid spacer in md5 line")
         self.__name = m_line[34:]
         if self.__name_pattern.match(self.__name) is None: raise ValueError("invalid name in md5 line")
-        if m_txt == self.__name: raise ValueError("invalid name in md5 line")
+        if m_asset_name == self.__name: raise ValueError("invalid name in md5 line")
       name = property(lambda self: self.__name)
       digest = property(lambda self: self.__digest)
-    m_asset = m_assets["{}.md5.txt".format(m_options.name)]
-    with make_download_stream(m_asset) as m_response: return tuple([Record(m_line.decode("utf-8")) for m_line in m_response.readlines()])
+    def make_input_lines():
+      m_asset = m_assets[m_asset_name]
+      m_try_number = 0
+      while True:
+        m_try_number += 1
+        m_log("{}: downloading asset \"{}\", try #{}, expected size = {}, url = \"{}\"".format(main_path, m_asset_name, m_try_number, m_asset.size, m_asset.url), file = sys.stderr)
+        try:
+          with make_download_stream(m_asset) as m_response: return tuple([m_line.decode("utf-8") for m_line in m_response.readlines()])
+        except:
+          if 3 > m_try_number: traceback.print_exc(file = sys.stderr)
+          else: raise
+        m_log("{}: waiting 5 seconds".format(main_path), file = sys.stderr)
+        time.sleep(+5.0e+0)
+    return tuple([Record(m_line) for m_line in make_input_lines()])
 
   m_buffer = ctypes.create_string_buffer(m_options.buffer_size)
   m_buffer_length = len(m_buffer)
